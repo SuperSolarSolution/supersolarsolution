@@ -10,6 +10,11 @@ import Calculator from "./pages/Calculator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import InvestorDashboard from "./pages/dashboard/InvestorDashboard";
+import InvestorInvestments from "./pages/dashboard/investor/InvestorInvestments";
+import InvestorAssets from "./pages/dashboard/investor/InvestorAssets";
+import InvestorReturns from "./pages/dashboard/investor/InvestorReturns";
+import InvestorWallet from "./pages/dashboard/investor/InvestorWallet";
+import InvestorSettings from "./pages/dashboard/investor/InvestorSettings";
 import CorporateDashboard from "./pages/dashboard/CorporateDashboard";
 import NBFCDashboard from "./pages/dashboard/NBFCDashboard";
 import ImplementerDashboard from "./pages/dashboard/ImplementerDashboard";
@@ -33,10 +38,50 @@ const App = () => (
             
             {/* Protected Dashboard Routes */}
             <Route
-              path="/dashboard/investor/*"
+              path="/dashboard/investor"
               element={
                 <ProtectedRoute allowedRoles={['investor']}>
                   <InvestorDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/investor/investments"
+              element={
+                <ProtectedRoute allowedRoles={['investor']}>
+                  <InvestorInvestments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/investor/assets"
+              element={
+                <ProtectedRoute allowedRoles={['investor']}>
+                  <InvestorAssets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/investor/returns"
+              element={
+                <ProtectedRoute allowedRoles={['investor']}>
+                  <InvestorReturns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/investor/wallet"
+              element={
+                <ProtectedRoute allowedRoles={['investor']}>
+                  <InvestorWallet />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard/investor/settings"
+              element={
+                <ProtectedRoute allowedRoles={['investor']}>
+                  <InvestorSettings />
                 </ProtectedRoute>
               }
             />
