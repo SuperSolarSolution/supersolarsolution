@@ -21,7 +21,7 @@ interface AuthContextType {
   role: AppRole | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, role: AppRole) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; role?: AppRole | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUserData = async (userId: string) => {
+  const fetchUserData = async (userId: string): Promise<AppRole | null> => {
     try {
       // Fetch profile
       const { data: profileData } = await supabase
@@ -56,9 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (roleData) {
         setRole(roleData.role as AppRole);
+        return roleData.role as AppRole;
       }
+      return null;
     } catch (error) {
       console.error('Error fetching user data:', error);
+      return null;
     }
   };
 
@@ -136,14 +139,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<{ error: Error | null; role?: AppRole | null }> => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+      
+      // Fetch user data immediately after sign in
+      if (data.user) {
+        const userRole = await fetchUserData(data.user.id);
+        return { error: null, role: userRole };
+      }
+      
       return { error: null };
     } catch (error) {
       return { error: error as Error };

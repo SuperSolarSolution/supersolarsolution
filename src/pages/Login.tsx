@@ -28,7 +28,7 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await signIn(email, password);
+    const { error, role: userRole } = await signIn(email, password);
 
     if (error) {
       toast({
@@ -44,6 +44,11 @@ export default function Login() {
       title: 'Welcome back!',
       description: 'You have successfully signed in.',
     });
+
+    // Navigate immediately after successful sign in
+    if (userRole) {
+      navigate(roleRoutes[userRole]);
+    }
   };
 
   if (authLoading) {
