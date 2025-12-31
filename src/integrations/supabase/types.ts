@@ -229,6 +229,7 @@ export type Database = {
           id: string
           kyc_status: Database["public"]["Enums"]["kyc_status"]
           phone: string | null
+          role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
         Insert: {
@@ -239,6 +240,7 @@ export type Database = {
           id: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
           phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Update: {
@@ -249,6 +251,7 @@ export type Database = {
           id?: string
           kyc_status?: Database["public"]["Enums"]["kyc_status"]
           phone?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
         Relationships: []
@@ -343,27 +346,6 @@ export type Database = {
           to_entity?: string
           type?: Database["public"]["Enums"]["transaction_type"]
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
         }
         Relationships: []
       }

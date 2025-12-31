@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserData = async (userId: string): Promise<AppRole | null> => {
     try {
-      // Fetch profile
+      // Fetch profile (which now includes role)
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -45,18 +45,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (profileData) {
         setProfile(profileData as Profile);
-      }
-
-      // Fetch role
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (roleData) {
-        setRole(roleData.role as AppRole);
-        return roleData.role as AppRole;
+        setRole(profileData.role as AppRole);
+        return profileData.role as AppRole;
       }
       return null;
     } catch (error) {
@@ -106,32 +96,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const redirectUrl = `${window.location.origin}/`;
 
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
             full_name: fullName,
+            role: selectedRole,
           },
         },
       });
 
       if (error) throw error;
-
-      // After signup, insert the role
-      if (data.user) {
-        const { error: roleError } = await supabase
-          .from('user_roles')
-          .insert({
-            user_id: data.user.id,
-            role: selectedRole,
-          });
-
-        if (roleError) {
-          console.error('Error setting role:', roleError);
-        }
-      }
 
       return { error: null };
     } catch (error) {
