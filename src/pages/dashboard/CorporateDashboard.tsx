@@ -3,30 +3,82 @@ import { KPICard } from '@/components/dashboard/KPICard';
 import { EnergyChart } from '@/components/charts/EnergyChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { corporateKPIs, mockEnergyData } from '@/data/mockData';
-import { Wallet, Zap, Leaf, TrendingDown } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSolarAssets } from '@/hooks/useSolarAssets';
+import { useEnergyGeneration } from '@/hooks/useEnergyGeneration';
+import { Wallet, Zap, Leaf, TrendingDown, Loader2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-
-const costComparisonData = [
-  { month: 'Jan', Grid: 485000, Solar: 285000 },
-  { month: 'Feb', Grid: 520000, Solar: 298000 },
-  { month: 'Mar', Grid: 545000, Solar: 312000 },
-  { month: 'Apr', Grid: 580000, Solar: 325000 },
-  { month: 'May', Grid: 610000, Solar: 342000 },
-  { month: 'Jun', Grid: 590000, Solar: 328000 },
-];
-
-const contractDetails = [
-  { label: 'Contract Type', value: 'Power Purchase Agreement' },
-  { label: 'Tenure', value: '15 Years' },
-  { label: 'Tariff Rate', value: '₹4.50/kWh' },
-  { label: 'Annual Escalation', value: '2%' },
-  { label: 'Start Date', value: '15 Jun 2023' },
-  { label: 'Asset Capacity', value: '5,000 kW' },
-];
+import { KPIMetric } from '@/types';
 
 export default function CorporateDashboard() {
+  const { profile, user } = useAuth();
+  const { data: allAssets, isLoading: assetsLoading } = useSolarAssets();
+  const { data: energyData, isLoading: energyLoading } = useEnergyGeneration();
+
+  const isLoading = assetsLoading || energyLoading;
+
+  // Filter assets assigned to this corporate
+  const corporateAssets = allAssets?.filter(asset => asset.corporate_id === user?.id) || [];
+
+  // Calculate metrics
+  const totalCapacity = corporateAssets.reduce((sum, asset) => sum + Number(asset.capacity_kw), 0);
+  const totalGenerated = energyData?.reduce((sum, e) => sum + Number(e.generated_kwh), 0) || 0;
+  const totalConsumed = energyData?.reduce((sum, e) => sum + Number(e.consumed_kwh), 0) || 0;
+  const totalExported = energyData?.reduce((sum, e) => sum + Number(e.exported_kwh), 0) || 0;
+
+  // Cost calculations (assuming ₹8/kWh grid rate and ₹4.5/kWh solar rate)
+  const gridRate = 8;
+  const solarRate = 4.5;
+  const monthlySavings = totalConsumed * (gridRate - solarRate);
+  const carbonOffset = totalGenerated * 0.0008; // ~0.8 kg CO2 per kWh
+
+  const kpis: KPIMetric[] = [
+    { label: 'Monthly Savings', value: `₹${(monthlySavings / 100000).toFixed(1)}L`, trend: 'up', change: 15.2 },
+    { label: 'Energy Generated', value: `${(totalGenerated / 1000).toFixed(0)} MWh`, trend: 'up', change: 8.5 },
+    { label: 'Carbon Offset', value: `${carbonOffset.toFixed(1)} tCO₂`, trend: 'up', change: 12.0 },
+    { label: 'Grid Cost Reduction', value: '42%', trend: 'up', change: 5.3 },
+  ];
+
   const icons = [Wallet, Zap, Leaf, TrendingDown];
+
+  // Create cost comparison data (mock monthly data)
+  const costComparisonData = [
+    { month: 'Jan', Grid: 485000, Solar: 285000 },
+    { month: 'Feb', Grid: 520000, Solar: 298000 },
+    { month: 'Mar', Grid: 545000, Solar: 312000 },
+    { month: 'Apr', Grid: 580000, Solar: 325000 },
+    { month: 'May', Grid: 610000, Solar: 342000 },
+    { month: 'Jun', Grid: 590000, Solar: 328000 },
+  ];
+
+  // Map energy data for chart
+  const mappedEnergyData = energyData?.map(e => ({
+    id: e.id,
+    assetId: e.asset_id,
+    date: new Date(e.date),
+    generatedKWh: Number(e.generated_kwh),
+    consumedKWh: Number(e.consumed_kwh),
+    exportedKWh: Number(e.exported_kwh),
+  })) || [];
+
+  const contractDetails = [
+    { label: 'Contract Type', value: 'Power Purchase Agreement' },
+    { label: 'Tenure', value: '15 Years' },
+    { label: 'Tariff Rate', value: `₹${solarRate}/kWh` },
+    { label: 'Annual Escalation', value: '2%' },
+    { label: 'Start Date', value: corporateAssets[0]?.installation_date || 'N/A' },
+    { label: 'Asset Capacity', value: `${totalCapacity.toLocaleString()} kW` },
+  ];
+
+  if (isLoading) {
+    return (
+      <DashboardLayout role="corporate">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout role="corporate">
@@ -34,12 +86,12 @@ export default function CorporateDashboard() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold">Corporate Dashboard</h1>
-          <p className="text-muted-foreground">Tata Industries Pvt. Ltd.</p>
+          <p className="text-muted-foreground">{profile?.full_name || 'Corporate User'}</p>
         </div>
 
         {/* KPI Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {corporateKPIs.map((metric, idx) => (
+          {kpis.map((metric, idx) => (
             <KPICard key={metric.label} metric={metric} icon={icons[idx]} />
           ))}
         </div>
@@ -47,7 +99,18 @@ export default function CorporateDashboard() {
         {/* Charts Row */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Energy Generation */}
-          <EnergyChart data={mockEnergyData} />
+          {mappedEnergyData.length > 0 ? (
+            <EnergyChart data={mappedEnergyData} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Energy Generation vs Consumption</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-center h-72 text-muted-foreground">
+                No energy data available yet
+              </CardContent>
+            </Card>
+          )}
 
           {/* Cost Comparison */}
           <Card>
@@ -100,19 +163,19 @@ export default function CorporateDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg bg-green-50 p-4">
+              <div className="rounded-lg bg-green-50 p-4 dark:bg-green-950">
                 <p className="text-sm text-muted-foreground">Carbon Offset (This Year)</p>
-                <p className="text-2xl font-bold text-green-700">92.5 tCO₂</p>
-                <p className="text-xs text-green-600 mt-1">Equivalent to 4,250 trees planted</p>
+                <p className="text-2xl font-bold text-green-700 dark:text-green-400">{carbonOffset.toFixed(1)} tCO₂</p>
+                <p className="text-xs text-green-600 dark:text-green-500 mt-1">Equivalent to {Math.floor(carbonOffset * 46)} trees planted</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Clean Energy %</p>
-                  <p className="text-xl font-bold">78%</p>
+                  <p className="text-xl font-bold">{totalCapacity > 0 ? '78%' : '0%'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">ESG Score</p>
-                  <p className="text-xl font-bold">A+</p>
+                  <p className="text-xl font-bold">{totalCapacity > 0 ? 'A+' : 'N/A'}</p>
                 </div>
               </div>
             </CardContent>
@@ -126,24 +189,24 @@ export default function CorporateDashboard() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm">Current Month Bill</span>
-                <Badge variant="outline" className="bg-green-50 text-green-700">Due in 15 days</Badge>
+                <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400">Due in 15 days</Badge>
               </div>
               <div>
-                <p className="text-3xl font-bold">₹3,28,450</p>
-                <p className="text-sm text-muted-foreground">For June 2024</p>
+                <p className="text-3xl font-bold">₹{(totalConsumed * solarRate).toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">For current period</p>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Energy Consumed</span>
-                  <span>18,100 kWh</span>
+                  <span>{totalConsumed.toLocaleString()} kWh</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Rate</span>
-                  <span>₹4.50/kWh</span>
+                  <span>₹{solarRate}/kWh</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">You Saved vs Grid</span>
-                  <span className="text-green-600 font-medium">₹2,62,000</span>
+                  <span className="text-green-600 font-medium">₹{monthlySavings.toLocaleString()}</span>
                 </div>
               </div>
             </CardContent>
