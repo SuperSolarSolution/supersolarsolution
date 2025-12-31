@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
@@ -7,24 +7,80 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Sun } from 'lucide-react';
-import { UserRole } from '@/types';
+import { Sun, Loader2 } from 'lucide-react';
+import { useAuth, AppRole, roleRoutes } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Register() {
   const navigate = useNavigate();
+  const { signUp, user, role, loading: authLoading } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'investor' as UserRole,
+    role: 'investor' as AppRole,
     acceptTerms: false,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && role && !authLoading) {
+      navigate(roleRoutes[role]);
+    }
+  }, [user, role, authLoading, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo: Navigate to login
+    
+    if (!formData.acceptTerms) {
+      toast({
+        title: 'Please accept terms',
+        description: 'You must accept the terms and conditions to register.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast({
+        title: 'Password too short',
+        description: 'Password must be at least 6 characters.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await signUp(formData.email, formData.password, formData.name, formData.role);
+
+    if (error) {
+      toast({
+        title: 'Registration failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return;
+    }
+
+    toast({
+      title: 'Account created!',
+      description: 'Please check your email to verify your account, or sign in if email confirmation is disabled.',
+    });
+    
     navigate('/login');
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -49,6 +105,7 @@ export default function Register() {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
@@ -60,6 +117,7 @@ export default function Register() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
@@ -71,13 +129,15 @@ export default function Register() {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">I am registering as</Label>
                 <Select 
                   value={formData.role} 
-                  onValueChange={(v) => setFormData({ ...formData, role: v as UserRole })}
+                  onValueChange={(v) => setFormData({ ...formData, role: v as AppRole })}
+                  disabled={loading}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -97,13 +157,21 @@ export default function Register() {
                   onCheckedChange={(checked) => 
                     setFormData({ ...formData, acceptTerms: checked === true })
                   }
+                  disabled={loading}
                 />
                 <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
                   I agree to the Terms of Service, Privacy Policy, and understand that KYC verification is required before investing.
                 </Label>
               </div>
-              <Button type="submit" className="w-full" disabled={!formData.acceptTerms}>
-                Create Account
+              <Button type="submit" className="w-full" disabled={!formData.acceptTerms || loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  'Create Account'
+                )}
               </Button>
             </form>
             <div className="mt-4 text-center text-sm text-muted-foreground">

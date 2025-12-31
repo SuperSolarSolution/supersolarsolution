@@ -4,33 +4,83 @@ import { FundingChart } from '@/components/charts/FundingChart';
 import { AssetTable } from '@/components/dashboard/AssetTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { nbfcKPIs, mockSolarAssets } from '@/data/mockData';
-import { Wallet, TrendingUp, PieChart, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNBFCFunding, useFundingMilestones } from '@/hooks/useNBFCFunding';
+import { useSolarAssets } from '@/hooks/useSolarAssets';
+import { Wallet, TrendingUp, PieChart, Shield, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-
-const fundAllocationData = [
-  { name: 'Gujarat Solar Park', value: 25000000, color: 'hsl(var(--primary))' },
-  { name: 'Rajasthan Solar Farm', value: 48000000, color: 'hsl(var(--chart-1))' },
-  { name: 'Karnataka Rooftop', value: 12500000, color: 'hsl(var(--chart-3))' },
-  { name: 'Maharashtra Industrial', value: 35000000, color: 'hsl(var(--chart-4))' },
-];
-
-const milestones = [
-  { asset: 'Karnataka Rooftop', milestone: 'Land Acquisition', status: 'completed', date: '15 Jan 2024' },
-  { asset: 'Karnataka Rooftop', milestone: 'Permitting', status: 'completed', date: '20 Feb 2024' },
-  { asset: 'Karnataka Rooftop', milestone: 'Foundation Work', status: 'in_progress', date: '30 Mar 2024' },
-  { asset: 'Karnataka Rooftop', milestone: 'Panel Installation', status: 'pending', date: '30 Apr 2024' },
-  { asset: 'Maharashtra Industrial', milestone: 'Land Acquisition', status: 'completed', date: '01 Mar 2024' },
-  { asset: 'Maharashtra Industrial', milestone: 'Permitting', status: 'in_progress', date: '15 Apr 2024' },
-];
-
-const riskAlerts = [
-  { asset: 'Gujarat Solar Park', alert: 'Performance 3% below forecast', severity: 'low' },
-  { asset: 'Rajasthan Solar Farm', alert: 'Maintenance scheduled next week', severity: 'info' },
-];
+import { KPIMetric } from '@/types';
 
 export default function NBFCDashboard() {
+  const { profile } = useAuth();
+  const { data: funding, isLoading: fundingLoading } = useNBFCFunding();
+  const { data: allAssets, isLoading: assetsLoading } = useSolarAssets();
+
+  const isLoading = fundingLoading || assetsLoading;
+
+  // Calculate KPIs from real data
+  const totalSanctioned = funding?.reduce((sum, f) => sum + Number(f.sanctioned_amount), 0) || 0;
+  const totalDisbursed = funding?.reduce((sum, f) => sum + Number(f.disbursed_amount), 0) || 0;
+  const activeAssets = funding?.filter(f => f.status !== 'closed').length || 0;
+  const portfolioHealth = funding && funding.length > 0 ? 
+    (funding.filter(f => f.status !== 'closed').length / funding.length) * 100 : 100;
+
+  const kpis: KPIMetric[] = [
+    { label: 'Total Sanctioned', value: `₹${(totalSanctioned / 10000000).toFixed(2)} Cr`, trend: 'up', change: 18.5 },
+    { label: 'Total Disbursed', value: `₹${(totalDisbursed / 10000000).toFixed(2)} Cr`, trend: 'up', change: 12.3 },
+    { label: 'Active Assets', value: activeAssets.toString(), trend: 'stable' },
+    { label: 'Portfolio Health', value: `${portfolioHealth.toFixed(0)}%`, trend: 'up', change: 2.1 },
+  ];
+
   const icons = [Wallet, TrendingUp, PieChart, Shield];
+
+  // Create fund allocation data for pie chart
+  const fundAllocationData = funding?.map((f, index) => ({
+    name: f.solar_assets?.name || 'Unknown Asset',
+    value: Number(f.sanctioned_amount),
+    color: `hsl(${index * 60}, 70%, 50%)`,
+  })) || [];
+
+  // Get funded asset IDs
+  const fundedAssetIds = new Set(funding?.map(f => f.asset_id) || []);
+  const fundedAssets = allAssets?.filter(asset => fundedAssetIds.has(asset.id)) || [];
+
+  // Map assets for table
+  const mappedAssets = fundedAssets.map(asset => ({
+    id: asset.id,
+    name: asset.name,
+    location: asset.location,
+    capacityKW: Number(asset.capacity_kw),
+    status: asset.status,
+    installationDate: asset.installation_date ? new Date(asset.installation_date) : null,
+    expectedLifeYears: asset.expected_life_years,
+    annualDegradation: Number(asset.annual_degradation),
+    corporateId: asset.corporate_id || '',
+    implementerId: asset.implementer_id || '',
+    totalInvestment: Number(asset.total_investment),
+    fundedAmount: Number(asset.funded_amount),
+    expectedIRR: Number(asset.expected_irr),
+    riskScore: asset.risk_score,
+  }));
+
+  // Risk alerts based on asset status
+  const riskAlerts = fundedAssets
+    ?.filter(asset => asset.status === 'maintenance')
+    .map(asset => ({
+      asset: asset.name,
+      alert: 'Asset is under maintenance',
+      severity: 'low' as const,
+    })) || [];
+
+  if (isLoading) {
+    return (
+      <DashboardLayout role="nbfc">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout role="nbfc">
@@ -38,12 +88,12 @@ export default function NBFCDashboard() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold">NBFC Dashboard</h1>
-          <p className="text-muted-foreground">Green Finance Ltd. - Institutional Funding Portal</p>
+          <p className="text-muted-foreground">{profile?.full_name || 'NBFC User'} - Institutional Funding Portal</p>
         </div>
 
         {/* KPI Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {nbfcKPIs.map((metric, idx) => (
+          {kpis.map((metric, idx) => (
             <KPICard key={metric.label} metric={metric} icon={icons[idx]} />
           ))}
         </div>
@@ -51,7 +101,18 @@ export default function NBFCDashboard() {
         {/* Charts Row */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Fund Allocation */}
-          <FundingChart data={fundAllocationData} title="Fund Allocation by Asset" />
+          {fundAllocationData.length > 0 ? (
+            <FundingChart data={fundAllocationData} title="Fund Allocation by Asset" />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Fund Allocation by Asset</CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-center h-72 text-muted-foreground">
+                No funding data available yet
+              </CardContent>
+            </Card>
+          )}
 
           {/* Risk Alerts */}
           <Card>
@@ -113,45 +174,57 @@ export default function NBFCDashboard() {
           </Card>
         </div>
 
-        {/* Milestone Tracking */}
+        {/* Disbursement Milestones */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Disbursement Milestones</CardTitle>
+            <CardTitle className="text-lg">Disbursement Status</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {milestones.map((m, idx) => (
-                <div key={idx} className="flex items-center justify-between border-b border-border pb-3 last:border-0">
-                  <div className="flex items-center gap-3">
-                    <div className={`h-2 w-2 rounded-full ${
-                      m.status === 'completed' ? 'bg-green-500' :
-                      m.status === 'in_progress' ? 'bg-primary' : 'bg-muted'
-                    }`} />
-                    <div>
-                      <p className="text-sm font-medium">{m.milestone}</p>
-                      <p className="text-xs text-muted-foreground">{m.asset}</p>
+            {funding && funding.length > 0 ? (
+              <div className="space-y-4">
+                {funding.map((f) => (
+                  <div key={f.id} className="flex items-center justify-between border-b border-border pb-3 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-2 w-2 rounded-full ${
+                        f.status === 'fully_disbursed' ? 'bg-green-500' :
+                        f.status === 'partially_disbursed' ? 'bg-primary' : 'bg-muted'
+                      }`} />
+                      <div>
+                        <p className="text-sm font-medium">{f.solar_assets?.name || 'Unknown Asset'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Disbursed: ₹{(Number(f.disbursed_amount) / 10000000).toFixed(2)} Cr / ₹{(Number(f.sanctioned_amount) / 10000000).toFixed(2)} Cr
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground">{m.date}</span>
                     <Badge variant="outline" className={
-                      m.status === 'completed' ? 'bg-green-50 text-green-700' :
-                      m.status === 'in_progress' ? 'bg-primary/10 text-primary' : ''
+                      f.status === 'fully_disbursed' ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400' :
+                      f.status === 'partially_disbursed' ? 'bg-primary/10 text-primary' : ''
                     }>
-                      {m.status === 'completed' ? 'Completed' : 
-                       m.status === 'in_progress' ? 'In Progress' : 'Pending'}
+                      {f.status.replace('_', ' ')}
                     </Badge>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-muted-foreground py-8">
+                No funding records yet
+              </div>
+            )}
           </CardContent>
         </Card>
 
         {/* Asset Portfolio */}
         <div>
           <h2 className="mb-4 text-lg font-semibold">Funded Assets</h2>
-          <AssetTable assets={mockSolarAssets} />
+          {mappedAssets.length > 0 ? (
+            <AssetTable assets={mappedAssets} />
+          ) : (
+            <Card>
+              <CardContent className="py-8 text-center text-muted-foreground">
+                No funded assets yet
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </DashboardLayout>
