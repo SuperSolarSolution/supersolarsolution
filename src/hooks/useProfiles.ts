@@ -48,17 +48,9 @@ export function useAllProfilesWithRoles() {
 
       if (profilesError) throw profilesError;
 
-      const { data: roles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) throw rolesError;
-
-      const roleMap = new Map(roles?.map(r => [r.user_id, r.role]) || []);
-
       return (profiles || []).map(profile => ({
         ...profile,
-        role: roleMap.get(profile.id),
+        role: profile.role,
       })) as ProfileWithRole[];
     },
     enabled: role === 'admin',
