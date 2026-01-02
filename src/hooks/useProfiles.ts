@@ -9,6 +9,7 @@ export interface Profile {
   phone: string | null;
   kyc_status: 'pending' | 'approved' | 'rejected';
   avatar_url: string | null;
+  wallet_balance: number;
   created_at: string;
   updated_at: string;
 }
@@ -29,7 +30,7 @@ export function useAllProfiles() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Profile[];
+      return data as unknown as Profile[];
     },
     enabled: role === 'admin',
   });
@@ -65,6 +66,28 @@ export function useUpdateKYCStatus() {
       const { data, error } = await supabase
         .from('profiles')
         .update({ kyc_status: status })
+        .eq('id', userId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['profiles-with-roles'] });
+    },
+  });
+}
+
+export function useUpdateUserRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: 'investor' | 'corporate' | 'nbfc' | 'implementer' | 'admin' }) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ role: role })
         .eq('id', userId)
         .select()
         .single();

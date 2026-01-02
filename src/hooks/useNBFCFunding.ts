@@ -4,7 +4,8 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export interface NBFCFunding {
   id: string;
-  asset_id: string;
+  asset_id: string | null;
+  project_id: string | null;
   nbfc_id: string;
   sanctioned_amount: number;
   disbursed_amount: number;
@@ -16,6 +17,13 @@ export interface NBFCFunding {
     name: string;
     location: string;
     capacity_kw: number;
+    status: string;
+  };
+  projects?: {
+    project_id: string;
+    project_name: string;
+    location: string;
+    estimated_capacity_kw: number;
     status: string;
   };
 }
@@ -47,6 +55,13 @@ export function useNBFCFunding() {
             location,
             capacity_kw,
             status
+          ),
+          projects (
+            project_id,
+            project_name,
+            location,
+            estimated_capacity_kw,
+            status
           )
         `)
         .order('created_at', { ascending: false });
@@ -59,7 +74,7 @@ export function useNBFCFunding() {
       const { data, error } = await query;
 
       if (error) throw error;
-      return data as NBFCFunding[];
+      return data as unknown as NBFCFunding[];
     },
     enabled: !!user,
   });
@@ -93,7 +108,8 @@ export function useCreateFunding() {
 
   return useMutation({
     mutationFn: async (funding: {
-      asset_id: string;
+      asset_id?: string;
+      project_id?: string;
       sanctioned_amount: number;
     }) => {
       if (!user) throw new Error('Must be logged in');
@@ -103,7 +119,7 @@ export function useCreateFunding() {
         .insert({
           ...funding,
           nbfc_id: user.id,
-        })
+        } as any)
         .select()
         .single();
 

@@ -97,7 +97,7 @@ export default function InvestorDashboard() {
             <p className="text-muted-foreground">Welcome back, {profile?.full_name || 'Investor'}</p>
           </div>
           <Button asChild>
-            <Link to="/calculator">
+            <Link to="/dashboard/investor/assets">
               Explore New Assets <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -138,7 +138,7 @@ export default function InvestorDashboard() {
                           <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value: number) => [`₹${(value/100000).toFixed(1)}L`, 'Amount']} />
+                      <Tooltip formatter={(value: number) => [`₹${(value / 100000).toFixed(1)}L`, 'Amount']} />
                       <Legend />
                     </RechartsPie>
                   </ResponsiveContainer>
@@ -153,8 +153,8 @@ export default function InvestorDashboard() {
 
           {/* Recent Transactions */}
           <div className="lg:col-span-2">
-            <TransactionList 
-              transactions={mappedTransactions.slice(0, 10)} 
+            <TransactionList
+              transactions={mappedTransactions.slice(0, 10)}
               title="Recent Transactions"
             />
           </div>

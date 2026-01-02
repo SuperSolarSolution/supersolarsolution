@@ -12,6 +12,8 @@ interface Profile {
   phone: string | null;
   kyc_status: 'pending' | 'approved' | 'rejected';
   avatar_url: string | null;
+  wallet_balance: number;
+  referral_code: string;
 }
 
 interface AuthContextType {
@@ -20,7 +22,7 @@ interface AuthContextType {
   profile: Profile | null;
   role: AppRole | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName: string, role: AppRole) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string, role: AppRole, referralCode?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null; role?: AppRole | null }>;
   signOut: () => Promise<void>;
 }
@@ -44,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .maybeSingle();
 
       if (profileData) {
-        setProfile(profileData as Profile);
+        setProfile(profileData as unknown as Profile);
         setRole(profileData.role as AppRole);
         return profileData.role as AppRole;
       }
@@ -92,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, selectedRole: AppRole) => {
+  const signUp = async (email: string, password: string, fullName: string, selectedRole: AppRole, referralCode?: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
 
@@ -104,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: fullName,
             role: selectedRole,
+            referral_code: referralCode,
           },
         },
       });
@@ -124,13 +127,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) throw error;
-      
+
       // Fetch user data immediately after sign in
       if (data.user) {
         const userRole = await fetchUserData(data.user.id);
         return { error: null, role: userRole };
       }
-      
+
       return { error: null };
     } catch (error) {
       return { error: error as Error };

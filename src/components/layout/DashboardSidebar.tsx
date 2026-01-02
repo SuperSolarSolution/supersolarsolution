@@ -18,6 +18,7 @@ import {
   Receipt,
   AlertTriangle,
   BarChart3,
+  Zap,
 } from 'lucide-react';
 
 interface DashboardSidebarProps {
@@ -34,16 +35,17 @@ const menuItems: Record<UserRole, { label: string; icon: React.ComponentType<any
     { label: 'Settings', icon: Settings, path: '/dashboard/investor/settings' },
   ],
   corporate: [
-    { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard/corporate' },
-    { label: 'Energy Analytics', icon: BarChart3, path: '/dashboard/corporate/energy' },
-    { label: 'Cost Savings', icon: Wallet, path: '/dashboard/corporate/savings' },
-    { label: 'Billing', icon: Receipt, path: '/dashboard/corporate/billing' },
-    { label: 'Sustainability', icon: Leaf, path: '/dashboard/corporate/sustainability' },
+    { label: 'Overview', icon: LayoutDashboard, path: '/dashboard/corporate' },
+    { label: 'Projects', icon: Building2, path: '/dashboard/corporate/projects' },
+    { label: 'Power Generation', icon: Zap, path: '/dashboard/corporate/power' },
+    { label: 'Billing & Payments', icon: Receipt, path: '/dashboard/corporate/billing' },
     { label: 'Contracts', icon: FileText, path: '/dashboard/corporate/contracts' },
-    { label: 'Settings', icon: Settings, path: '/dashboard/corporate/settings' },
+    { label: 'Asset Status', icon: Wrench, path: '/dashboard/corporate/assets' },
+    { label: 'Sustainability', icon: Leaf, path: '/dashboard/corporate/sustainability' },
   ],
   nbfc: [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard/nbfc' },
+    { label: 'Project Discovery', icon: Building2, path: '/dashboard/nbfc/projects' },
     { label: 'Fund Allocation', icon: PieChart, path: '/dashboard/nbfc/allocation' },
     { label: 'Disbursements', icon: Wallet, path: '/dashboard/nbfc/disbursements' },
     { label: 'Asset Portfolio', icon: Sun, path: '/dashboard/nbfc/portfolio' },
@@ -94,7 +96,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
           {items.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            
+
             return (
               <Link
                 key={item.path}

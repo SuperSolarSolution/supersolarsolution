@@ -13,12 +13,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function InvestorInvestments() {
   const { data: investments, isLoading } = useInvestments();
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const filteredInvestments = investments?.filter(inv => 
+  const filteredInvestments = investments?.filter(inv =>
     statusFilter === 'all' ? true : inv.status === statusFilter
   ) || [];
 
@@ -51,9 +52,11 @@ export default function InvestorInvestments() {
             <h1 className="text-2xl font-bold">My Investments</h1>
             <p className="text-muted-foreground">Track and manage your solar investments</p>
           </div>
-          <Button>
-            <ArrowUpRight className="mr-2 h-4 w-4" />
-            New Investment
+          <Button asChild>
+            <Link to="/dashboard/investor/assets">
+              <ArrowUpRight className="mr-2 h-4 w-4" />
+              New Investment
+            </Link>
           </Button>
         </div>
 
@@ -128,7 +131,7 @@ export default function InvestorInvestments() {
                         <p className="text-sm text-muted-foreground mb-4">
                           {investment.solar_assets?.location || 'Location not specified'}
                         </p>
-                        
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           <div>
                             <p className="text-xs text-muted-foreground">Investment Amount</p>

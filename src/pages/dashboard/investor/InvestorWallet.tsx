@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useTransactions } from '@/hooks/useTransactions';
+import { useTransactions, useAddFunds } from '@/hooks/useTransactions';
+import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Wallet, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  Gift, 
-  Copy, 
-  Users, 
+import {
+  Wallet,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Gift,
+  Copy,
+  Users,
   IndianRupee,
   Plus,
   Send,
@@ -43,27 +44,21 @@ import { useToast } from '@/hooks/use-toast';
 export default function InvestorWallet() {
   const { profile, user } = useAuth();
   const { data: transactions, isLoading } = useTransactions();
+  const { mutate: addFunds, isPending: isAddingFunds } = useAddFunds();
   const { toast } = useToast();
+  const { data: referralStats } = useReferrals();
   const [addMoneyAmount, setAddMoneyAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Calculate wallet balance from transactions
-  const walletBalance = transactions?.reduce((balance, tx) => {
-    if (tx.type === 'return' && tx.status === 'completed') {
-      return balance + Number(tx.amount);
-    }
-    if (tx.type === 'investment' && tx.status === 'completed') {
-      return balance - Number(tx.amount);
-    }
-    return balance;
-  }, 0) || 0;
+  // Use real wallet balance from profile
+  const walletBalance = profile?.wallet_balance || 0;
 
-  // Mock referral data
-  const referralCode = `S3-${user?.id?.slice(0, 8).toUpperCase() || 'XXXXX'}`;
-  const referralEarnings = 5000;
-  const totalReferrals = 3;
-  const pendingReferrals = 1;
+  // Real referral data
+  const referralCode = referralStats?.referralCode || profile?.referral_code || 'Loading...';
+  const referralEarnings = referralStats?.totalEarned || 0;
+  const successfulReferrals = referralStats?.successfulReferrals || 0;
+  const pendingReferrals = referralStats?.pendingReferrals || 0;
 
   const handleCopyReferral = () => {
     navigator.clipboard.writeText(referralCode);
@@ -76,9 +71,26 @@ export default function InvestorWallet() {
   };
 
   const handleAddMoney = () => {
-    toast({
-      title: 'Add Money',
-      description: 'Payment gateway integration coming soon!',
+    if (!addMoneyAmount) return;
+
+    addFunds(Number(addMoneyAmount), {
+      onSuccess: () => {
+        toast({
+          title: 'Money Added',
+          description: `₹${addMoneyAmount} added to your wallet successfully.`,
+        });
+        setAddMoneyAmount('');
+        // Close dialog - logic needs to be handled via state or ref if dialog is controlled, 
+        // but here it's uncontrolled so we rely on toast and reset.
+        // ideally we should control the dialog open state.
+      },
+      onError: (error) => {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      }
     });
   };
 
@@ -156,8 +168,9 @@ export default function InvestorWallet() {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button onClick={handleAddMoney}>
-                        Proceed to Pay
+                      <Button onClick={handleAddMoney} disabled={isAddingFunds || !addMoneyAmount}>
+                        {isAddingFunds && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Add Funds
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -299,7 +312,7 @@ export default function InvestorWallet() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="p-4 rounded-lg bg-background border text-center">
                     <Users className="h-8 w-8 mx-auto text-primary mb-2" />
-                    <p className="text-2xl font-bold">{totalReferrals}</p>
+                    <p className="text-2xl font-bold">{successfulReferrals}</p>
                     <p className="text-sm text-muted-foreground">Successful Referrals</p>
                   </div>
                   <div className="p-4 rounded-lg bg-background border text-center">

@@ -14,16 +14,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useState } from 'react';
+import { InvestorInvestModal } from '@/components/dashboard/investor/InvestorInvestModal';
+import { SolarAsset } from '@/hooks/useSolarAssets';
 
 export default function InvestorAssets() {
   const { data: assets, isLoading } = useSolarAssets();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
+  const [selectedAsset, setSelectedAsset] = useState<SolarAsset | null>(null);
 
   const filteredAssets = assets?.filter(asset => {
     const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          asset.location.toLowerCase().includes(searchQuery.toLowerCase());
+      asset.location.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' ? true : asset.status === statusFilter;
     const matchesRisk = riskFilter === 'all' ? true : asset.risk_score === riskFilter;
     return matchesSearch && matchesStatus && matchesRisk;
@@ -164,7 +167,7 @@ export default function InvestorAssets() {
                         {asset.status.replace('_', ' ')}
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mb-4">
                       <MapPin className="h-3 w-3" />
                       {asset.location}
@@ -202,7 +205,11 @@ export default function InvestorAssets() {
                       </p>
                     </div>
 
-                    <Button className="w-full" disabled={fundingProgress >= 100}>
+                    <Button
+                      className="w-full"
+                      disabled={fundingProgress >= 100}
+                      onClick={() => setSelectedAsset(asset)}
+                    >
                       {fundingProgress >= 100 ? 'Fully Funded' : 'Invest Now'}
                     </Button>
                   </CardContent>
@@ -220,6 +227,11 @@ export default function InvestorAssets() {
           )}
         </div>
       </div>
+      <InvestorInvestModal
+        isOpen={!!selectedAsset}
+        onClose={() => setSelectedAsset(null)}
+        asset={selectedAsset}
+      />
     </DashboardLayout>
   );
 }

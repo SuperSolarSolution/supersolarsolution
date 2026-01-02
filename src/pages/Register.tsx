@@ -21,6 +21,7 @@ export default function Register() {
     email: '',
     password: '',
     role: 'investor' as AppRole,
+    referralCode: '',
     acceptTerms: false,
   });
 
@@ -33,7 +34,7 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.acceptTerms) {
       toast({
         title: 'Please accept terms',
@@ -54,7 +55,7 @@ export default function Register() {
 
     setLoading(true);
 
-    const { error } = await signUp(formData.email, formData.password, formData.name, formData.role);
+    const { error } = await signUp(formData.email, formData.password, formData.name, formData.role, formData.referralCode);
 
     if (error) {
       toast({
@@ -70,7 +71,7 @@ export default function Register() {
       title: 'Account created!',
       description: 'Please check your email to verify your account, or sign in if email confirmation is disabled.',
     });
-    
+
     navigate('/login');
   };
 
@@ -134,8 +135,8 @@ export default function Register() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">I am registering as</Label>
-                <Select 
-                  value={formData.role} 
+                <Select
+                  value={formData.role}
                   onValueChange={(v) => setFormData({ ...formData, role: v as AppRole })}
                   disabled={loading}
                 >
@@ -150,11 +151,22 @@ export default function Register() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="referralCode">Referral Code (Optional)</Label>
+                <Input
+                  id="referralCode"
+                  type="text"
+                  placeholder="S3-XXXXXXXX"
+                  value={formData.referralCode}
+                  onChange={(e) => setFormData({ ...formData, referralCode: e.target.value.toUpperCase() })}
+                  disabled={loading}
+                />
+              </div>
               <div className="flex items-start gap-2">
-                <Checkbox 
+                <Checkbox
                   id="terms"
                   checked={formData.acceptTerms}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setFormData({ ...formData, acceptTerms: checked === true })
                   }
                   disabled={loading}

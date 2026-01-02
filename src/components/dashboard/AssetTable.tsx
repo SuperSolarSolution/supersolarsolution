@@ -13,20 +13,33 @@ import { cn } from '@/lib/utils';
 interface AssetTableProps {
   assets: SolarAsset[];
   onAssetClick?: (asset: SolarAsset) => void;
+  renderAction?: (asset: SolarAsset) => React.ReactNode;
 }
 
 const statusColors: Record<SolarAsset['status'], string> = {
-  planning: 'bg-muted text-muted-foreground',
+  planning: 'bg-indigo-100 text-indigo-700', // Match Live/Active color
   under_construction: 'bg-primary/20 text-primary',
   operational: 'bg-green-100 text-green-700',
   maintenance: 'bg-yellow-100 text-yellow-700',
+  Pending: 'bg-orange-100 text-orange-700',
+  Approved: 'bg-blue-100 text-blue-700',
+  Live: 'bg-indigo-100 text-indigo-700',
+  Rejected: 'bg-red-100 text-red-700',
+  Proposed: 'bg-orange-100 text-orange-700', // Same as Pending
+  Inactive: 'bg-gray-100 text-gray-700',
 };
 
 const statusLabels: Record<SolarAsset['status'], string> = {
-  planning: 'Planning',
+  planning: 'Live', // User prefers "Live" for Planning phase
   under_construction: 'Under Construction',
   operational: 'Operational',
   maintenance: 'Maintenance',
+  Pending: 'Pending',
+  Approved: 'Approved',
+  Live: 'Live',
+  Rejected: 'Rejected',
+  Proposed: 'Proposed',
+  Inactive: 'Inactive',
 };
 
 const riskColors: Record<SolarAsset['riskScore'], string> = {
@@ -45,7 +58,7 @@ function formatCurrency(amount: number): string {
   return `₹${amount.toLocaleString('en-IN')}`;
 }
 
-export function AssetTable({ assets, onAssetClick }: AssetTableProps) {
+export function AssetTable({ assets, onAssetClick, renderAction }: AssetTableProps) {
   return (
     <div className="rounded-lg border border-border bg-card">
       <Table>
@@ -59,6 +72,7 @@ export function AssetTable({ assets, onAssetClick }: AssetTableProps) {
             <TableHead className="text-right">Funded</TableHead>
             <TableHead className="text-right">IRR</TableHead>
             <TableHead>Risk</TableHead>
+            {onAssetClick ? null : <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -88,6 +102,11 @@ export function AssetTable({ assets, onAssetClick }: AssetTableProps) {
                   {asset.riskScore.charAt(0).toUpperCase() + asset.riskScore.slice(1)}
                 </Badge>
               </TableCell>
+              {onAssetClick ? null : (
+                <TableCell className="text-right">
+                  {renderAction?.(asset)}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

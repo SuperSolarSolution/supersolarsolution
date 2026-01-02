@@ -22,41 +22,47 @@ interface ScenarioResults {
 function calculateScenario(
   investment: number,
   tenure: number,
+  expectedLife: number,
   baseIRR: number,
   degradation: number,
   modifier: number
 ): ScenarioResults {
   const adjustedIRR = baseIRR * modifier;
   const annualReturn = investment * (adjustedIRR / 100);
-  
+
   let cashFlows: { year: number; inflow: number; cumulative: number }[] = [];
   let cumulative = -investment;
   let paybackYear = tenure;
-  
+
   for (let year = 1; year <= tenure; year++) {
     const degradationFactor = Math.pow(1 - degradation / 100, year - 1);
     const yearlyReturn = annualReturn * degradationFactor;
     cumulative += yearlyReturn;
-    
+
     if (cumulative >= 0 && paybackYear === tenure) {
       paybackYear = year;
     }
-    
+
     cashFlows.push({
       year,
       inflow: Math.round(yearlyReturn),
       cumulative: Math.round(cumulative),
     });
   }
-  
+
   const totalReturns = cashFlows.reduce((sum, cf) => sum + cf.inflow, 0);
-  
+
+  // Calculate residual value of the asset at the end of tenure
+  // Linear depreciation assuming the asset is worth 0 at end of life
+  const remainingLife = Math.max(0, expectedLife - tenure);
+  const residualValue = (investment * remainingLife) / expectedLife;
+
   return {
     irr: adjustedIRR,
     xirr: adjustedIRR * 0.95,
     paybackPeriod: paybackYear,
     totalReturns: Math.round(totalReturns),
-    netProfit: Math.round(totalReturns - investment),
+    netProfit: Math.round(totalReturns + residualValue - investment),
     cashFlows,
   };
 }
@@ -68,7 +74,7 @@ export function ROICalculator() {
   const [scenario, setScenario] = useState<'conservative' | 'expected' | 'aggressive'>('expected');
 
   const asset = mockSolarAssets.find(a => a.id === selectedAsset)!;
-  
+
   const scenarioModifiers = {
     conservative: 0.85,
     expected: 1.0,
@@ -76,9 +82,9 @@ export function ROICalculator() {
   };
 
   const results = useMemo(() => ({
-    conservative: calculateScenario(investmentAmount, tenure, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.conservative),
-    expected: calculateScenario(investmentAmount, tenure, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.expected),
-    aggressive: calculateScenario(investmentAmount, tenure, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.aggressive),
+    conservative: calculateScenario(investmentAmount, tenure, asset.expectedLifeYears, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.conservative),
+    expected: calculateScenario(investmentAmount, tenure, asset.expectedLifeYears, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.expected),
+    aggressive: calculateScenario(investmentAmount, tenure, asset.expectedLifeYears, asset.expectedIRR, asset.annualDegradation, scenarioModifiers.aggressive),
   }), [investmentAmount, tenure, asset]);
 
   const currentResult = results[scenario];
@@ -138,19 +144,19 @@ export function ROICalculator() {
                 type="number"
                 value={investmentAmount}
                 onChange={(e) => setInvestmentAmount(Number(e.target.value))}
-                min={100000}
-                step={50000}
+                min={100}
+                step={100}
               />
               <Slider
                 value={[investmentAmount]}
                 onValueChange={([val]) => setInvestmentAmount(val)}
-                min={100000}
+                min={100}
                 max={5000000}
-                step={50000}
+                step={100}
                 className="mt-2"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>₹1L</span>
+                <span>₹100</span>
                 <span>₹50L</span>
               </div>
             </div>
@@ -161,12 +167,12 @@ export function ROICalculator() {
                 value={[tenure]}
                 onValueChange={([val]) => setTenure(val)}
                 min={3}
-                max={15}
+                max={25}
                 step={1}
               />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>3 Years</span>
-                <span>15 Years</span>
+                <span>25 Years</span>
               </div>
             </div>
 
@@ -239,16 +245,16 @@ export function ROICalculator() {
                   <AreaChart data={currentResult.cashFlows}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="year" tickFormatter={(y) => `Y${y}`} className="text-xs" />
-                    <YAxis tickFormatter={(v) => `₹${(v/100000).toFixed(0)}L`} className="text-xs" />
-                    <Tooltip 
+                    <YAxis tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`} className="text-xs" />
+                    <Tooltip
                       formatter={(value: number) => [formatCurrency(value), '']}
                       labelFormatter={(year) => `Year ${year}`}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="cumulative" 
-                      stroke="hsl(var(--primary))" 
-                      fill="hsl(var(--primary) / 0.2)" 
+                    <Area
+                      type="monotone"
+                      dataKey="cumulative"
+                      stroke="hsl(var(--primary))"
+                      fill="hsl(var(--primary) / 0.2)"
                       name="Cumulative Returns"
                     />
                   </AreaChart>
@@ -264,7 +270,7 @@ export function ROICalculator() {
                   <BarChart data={comparisonData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="year" className="text-xs" />
-                    <YAxis tickFormatter={(v) => `₹${(v/1000).toFixed(0)}K`} className="text-xs" />
+                    <YAxis tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}K`} className="text-xs" />
                     <Tooltip formatter={(value: number) => [formatCurrency(value), '']} />
                     <Legend />
                     <Bar dataKey="Conservative" fill="hsl(var(--muted))" />
@@ -282,8 +288,8 @@ export function ROICalculator() {
       <Card className="bg-muted/30">
         <CardContent className="py-4">
           <p className="text-xs text-muted-foreground">
-            <strong>Disclaimer:</strong> These projections are estimates based on historical performance and market assumptions. 
-            Actual returns may vary due to market conditions, regulatory changes, and operational factors. 
+            <strong>Disclaimer:</strong> These projections are estimates based on historical performance and market assumptions.
+            Actual returns may vary due to market conditions, regulatory changes, and operational factors.
             Past performance is not indicative of future results. Please consult with a financial advisor before making investment decisions.
           </p>
         </CardContent>

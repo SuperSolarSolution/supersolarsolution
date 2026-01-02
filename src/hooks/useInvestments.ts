@@ -74,14 +74,12 @@ export function useCreateInvestment() {
     }) => {
       if (!user) throw new Error('Must be logged in');
 
-      const { data, error } = await supabase
-        .from('investments')
-        .insert({
-          ...investment,
-          investor_id: user.id,
-        })
-        .select()
-        .single();
+      const { data, error } = await supabase.rpc('invest_in_asset', {
+        p_asset_id: investment.asset_id,
+        p_investor_id: user.id,
+        p_amount: investment.amount,
+        p_expected_returns: investment.expected_returns || 0,
+      });
 
       if (error) throw error;
       return data;

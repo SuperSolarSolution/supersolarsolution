@@ -1,29 +1,65 @@
 -- Create enum for user roles
-CREATE TYPE public.app_role AS ENUM ('investor', 'corporate', 'nbfc', 'implementer', 'admin');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'app_role') THEN 
+    CREATE TYPE public.app_role AS ENUM ('investor', 'corporate', 'nbfc', 'implementer', 'admin'); 
+  END IF; 
+END $$;
 
 -- Create enum for KYC status
-CREATE TYPE public.kyc_status AS ENUM ('pending', 'approved', 'rejected');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'kyc_status') THEN 
+    CREATE TYPE public.kyc_status AS ENUM ('pending', 'approved', 'rejected'); 
+  END IF; 
+END $$;
 
 -- Create enum for asset status
-CREATE TYPE public.asset_status AS ENUM ('planning', 'under_construction', 'operational', 'maintenance');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'asset_status') THEN 
+    CREATE TYPE public.asset_status AS ENUM ('planning', 'under_construction', 'operational', 'maintenance'); 
+  END IF; 
+END $$;
 
 -- Create enum for risk score
-CREATE TYPE public.risk_score AS ENUM ('low', 'medium', 'high');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'risk_score') THEN 
+    CREATE TYPE public.risk_score AS ENUM ('low', 'medium', 'high'); 
+  END IF; 
+END $$;
 
 -- Create enum for investment status
-CREATE TYPE public.investment_status AS ENUM ('committed', 'deployed', 'returned');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'investment_status') THEN 
+    CREATE TYPE public.investment_status AS ENUM ('committed', 'deployed', 'returned'); 
+  END IF; 
+END $$;
 
 -- Create enum for funding status
-CREATE TYPE public.funding_status AS ENUM ('sanctioned', 'partially_disbursed', 'fully_disbursed', 'closed');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'funding_status') THEN 
+    CREATE TYPE public.funding_status AS ENUM ('sanctioned', 'partially_disbursed', 'fully_disbursed', 'closed'); 
+  END IF; 
+END $$;
 
 -- Create enum for milestone status
-CREATE TYPE public.milestone_status AS ENUM ('pending', 'completed', 'delayed');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'milestone_status') THEN 
+    CREATE TYPE public.milestone_status AS ENUM ('pending', 'completed', 'delayed'); 
+  END IF; 
+END $$;
 
 -- Create enum for transaction type
-CREATE TYPE public.transaction_type AS ENUM ('investment', 'return', 'disbursement', 'billing');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transaction_type') THEN 
+    CREATE TYPE public.transaction_type AS ENUM ('investment', 'return', 'disbursement', 'billing'); 
+  END IF; 
+END $$;
 
 -- Create enum for transaction status
-CREATE TYPE public.transaction_status AS ENUM ('pending', 'completed', 'failed');
+DO $$ BEGIN 
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'transaction_status') THEN 
+    CREATE TYPE public.transaction_status AS ENUM ('pending', 'completed', 'failed'); 
+  END IF; 
+END $$;
 
 -- Create profiles table
 CREATE TABLE public.profiles (

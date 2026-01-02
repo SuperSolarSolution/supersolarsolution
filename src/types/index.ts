@@ -16,7 +16,7 @@ export interface SolarAsset {
   name: string;
   location: string;
   capacityKW: number;
-  status: 'planning' | 'under_construction' | 'operational' | 'maintenance';
+  status: 'planning' | 'under_construction' | 'operational' | 'maintenance' | 'Pending' | 'Approved' | 'Live' | 'Rejected' | 'Proposed' | 'Inactive';
   installationDate: Date | null;
   expectedLifeYears: number;
   annualDegradation: number; // percentage
