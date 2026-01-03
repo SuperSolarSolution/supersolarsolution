@@ -70,7 +70,7 @@ export interface EnergyGeneration {
 
 export interface Transaction {
   id: string;
-  type: 'investment' | 'return' | 'disbursement' | 'billing';
+  type: 'investment' | 'return' | 'disbursement' | 'billing' | 'deposit' | 'withdrawal' | 'referral_bonus';
   amount: number;
   fromEntity: string;
   toEntity: string;

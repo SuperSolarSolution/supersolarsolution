@@ -15,6 +15,9 @@ const typeConfig: Record<Transaction['type'], { icon: React.ComponentType<any>; 
   return: { icon: ArrowDownLeft, label: 'Return', color: 'text-green-600' },
   disbursement: { icon: ArrowRight, label: 'Disbursement', color: 'text-blue-600' },
   billing: { icon: ArrowUpRight, label: 'Billing', color: 'text-orange-600' },
+  deposit: { icon: ArrowDownLeft, label: 'Deposit', color: 'text-green-600' },
+  withdrawal: { icon: ArrowUpRight, label: 'Withdrawal', color: 'text-red-600' },
+  referral_bonus: { icon: ArrowDownLeft, label: 'Referral Bonus', color: 'text-purple-600' },
 };
 
 const statusColors: Record<Transaction['status'], string> = {
