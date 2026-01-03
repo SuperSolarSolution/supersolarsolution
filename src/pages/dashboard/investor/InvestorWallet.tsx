@@ -163,7 +163,7 @@ export default function InvestorWallet() {
                 <p className="text-4xl font-bold mt-2">₹{walletBalance.toLocaleString()}</p>
                 <p className="text-sm opacity-80 mt-2">Last updated: Just now</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="secondary" size="sm">
