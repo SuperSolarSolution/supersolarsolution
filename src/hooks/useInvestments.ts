@@ -74,18 +74,26 @@ export function useCreateInvestment() {
     }) => {
       if (!user) throw new Error('Must be logged in');
 
-      const { data, error } = await supabase.rpc('invest_in_asset', {
-        p_asset_id: investment.asset_id,
-        p_investor_id: user.id,
-        p_amount: investment.amount,
-        p_expected_returns: investment.expected_returns || 0,
-      });
+      // Insert investment directly since the RPC function may not exist
+      const { data, error } = await supabase
+        .from('investments')
+        .insert({
+          asset_id: investment.asset_id,
+          investor_id: user.id,
+          amount: investment.amount,
+          maturity_date: investment.maturity_date,
+          expected_returns: investment.expected_returns || 0,
+          status: 'committed',
+        })
+        .select()
+        .single();
 
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['investments'] });
+      queryClient.invalidateQueries({ queryKey: ['solar-assets'] });
     },
   });
 }

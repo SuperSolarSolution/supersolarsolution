@@ -179,89 +179,6 @@ export type Database = {
           },
         ]
       }
-      nbfc_funding: {
-        Row: {
-          asset_id: string
-          created_at: string
-          disbursed_amount: number
-          id: string
-          nbfc_id: string
-          sanctioned_amount: number
-          status: Database["public"]["Enums"]["funding_status"]
-          updated_at: string
-        }
-        Insert: {
-          asset_id: string
-          created_at?: string
-          disbursed_amount?: number
-          id?: string
-          nbfc_id: string
-          sanctioned_amount: number
-          status?: Database["public"]["Enums"]["funding_status"]
-          updated_at?: string
-        }
-        Update: {
-          asset_id?: string
-          created_at?: string
-          disbursed_amount?: number
-          id?: string
-          nbfc_id?: string
-          sanctioned_amount?: number
-          status?: Database["public"]["Enums"]["funding_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "nbfc_funding_asset_id_fkey"
-            columns: ["asset_id"]
-            isOneToOne: false
-            referencedRelation: "solar_assets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string
-          email: string
-          full_name: string
-          id: string
-          kyc_status: Database["public"]["Enums"]["kyc_status"]
-          phone: string | null
-          role: Database["public"]["Enums"]["app_role"]
-          updated_at: string
-          wallet_balance: number
-          referral_code: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string
-          email: string
-          full_name: string
-          id: string
-          kyc_status?: Database["public"]["Enums"]["kyc_status"]
-          phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          wallet_balance?: number
-          referral_code?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string
-          email?: string
-          full_name?: string
-          id?: string
-          kyc_status?: Database["public"]["Enums"]["kyc_status"]
-          phone?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
-          updated_at?: string
-          wallet_balance?: number
-          referral_code?: string | null
-        }
-        Relationships: []
-      }
       invoices: {
         Row: {
           amount: number
@@ -306,95 +223,266 @@ export type Database = {
           },
         ]
       }
-      projects: {
+      nbfc_funding: {
         Row: {
-          project_id: string
-          corporate_id: string
-          project_name: string
-          location: string
-          status: string
-          estimated_capacity_kw: number | null
-          avg_power_consumption_kwh: number | null
-          peak_load_kw: number | null
-          area_available_sqft: number | null
-          lease_duration_years: number | null
-          billing_model: string | null
+          asset_id: string | null
           created_at: string
-          approved_at: string | null
-          project_type: string | null
-          land_ownership_type: string | null
-          desired_solar_offset_percentage: number | null
-          shadow_free_area: boolean | null
-          roof_type: string | null
-          lease_start_date: string | null
-          lease_end_date: string | null
-          ppa_start_date: string | null
-          ppa_end_date: string | null
-          ppa_rate: number | null
-          last_maintenance_date: string | null
-          next_maintenance_date: string | null
-          health_status: string | null
+          disbursed_amount: number
+          id: string
+          nbfc_id: string
+          project_id: string | null
+          sanctioned_amount: number
+          status: Database["public"]["Enums"]["funding_status"]
+          updated_at: string
         }
         Insert: {
-          project_id?: string
-          corporate_id: string
-          project_name: string
-          location: string
-          status?: string
-          estimated_capacity_kw?: number | null
-          avg_power_consumption_kwh?: number | null
-          peak_load_kw?: number | null
-          area_available_sqft?: number | null
-          lease_duration_years?: number | null
-          billing_model?: string | null
+          asset_id?: string | null
           created_at?: string
-          approved_at?: string | null
-          project_type?: string | null
-          land_ownership_type?: string | null
-          desired_solar_offset_percentage?: number | null
-          shadow_free_area?: boolean | null
-          roof_type?: string | null
-          lease_start_date?: string | null
-          lease_end_date?: string | null
-          ppa_start_date?: string | null
-          ppa_end_date?: string | null
-          ppa_rate?: number | null
-          last_maintenance_date?: string | null
-          next_maintenance_date?: string | null
-          health_status?: string | null
+          disbursed_amount?: number
+          id?: string
+          nbfc_id: string
+          project_id?: string | null
+          sanctioned_amount: number
+          status?: Database["public"]["Enums"]["funding_status"]
+          updated_at?: string
         }
         Update: {
-          project_id?: string
-          corporate_id?: string
-          project_name?: string
-          location?: string
-          status?: string
-          estimated_capacity_kw?: number | null
-          avg_power_consumption_kwh?: number | null
-          peak_load_kw?: number | null
-          area_available_sqft?: number | null
-          lease_duration_years?: number | null
-          billing_model?: string | null
+          asset_id?: string | null
           created_at?: string
-          approved_at?: string | null
-          project_type?: string | null
-          land_ownership_type?: string | null
-          desired_solar_offset_percentage?: number | null
-          shadow_free_area?: boolean | null
-          roof_type?: string | null
-          lease_start_date?: string | null
-          lease_end_date?: string | null
-          ppa_start_date?: string | null
-          ppa_end_date?: string | null
-          ppa_rate?: number | null
-          last_maintenance_date?: string | null
-          next_maintenance_date?: string | null
-          health_status?: string | null
+          disbursed_amount?: number
+          id?: string
+          nbfc_id?: string
+          project_id?: string | null
+          sanctioned_amount?: number
+          status?: Database["public"]["Enums"]["funding_status"]
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "projects_corporate_id_fkey"
-            columns: ["corporate_id"]
+            foreignKeyName: "nbfc_funding_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "solar_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nbfc_funding_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["project_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          kyc_status: Database["public"]["Enums"]["kyc_status"]
+          phone: string | null
+          referral_code: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          wallet_balance: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          phone?: string | null
+          referral_code?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          wallet_balance?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          kyc_status?: Database["public"]["Enums"]["kyc_status"]
+          phone?: string | null
+          referral_code?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          wallet_balance?: number
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          approved_at: string | null
+          area_available_sqft: number | null
+          avg_power_consumption_kwh: number | null
+          billing_model: string | null
+          corporate_id: string
+          created_at: string
+          desired_solar_offset_percentage: number | null
+          estimated_capacity_kw: number | null
+          health_status: string | null
+          land_ownership_type: string | null
+          last_maintenance_date: string | null
+          lease_duration_years: number | null
+          lease_end_date: string | null
+          lease_start_date: string | null
+          location: string
+          next_maintenance_date: string | null
+          peak_load_kw: number | null
+          ppa_end_date: string | null
+          ppa_rate: number | null
+          ppa_start_date: string | null
+          project_id: string
+          project_name: string
+          project_type: string | null
+          roof_type: string | null
+          shadow_free_area: boolean | null
+          status: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          area_available_sqft?: number | null
+          avg_power_consumption_kwh?: number | null
+          billing_model?: string | null
+          corporate_id: string
+          created_at?: string
+          desired_solar_offset_percentage?: number | null
+          estimated_capacity_kw?: number | null
+          health_status?: string | null
+          land_ownership_type?: string | null
+          last_maintenance_date?: string | null
+          lease_duration_years?: number | null
+          lease_end_date?: string | null
+          lease_start_date?: string | null
+          location: string
+          next_maintenance_date?: string | null
+          peak_load_kw?: number | null
+          ppa_end_date?: string | null
+          ppa_rate?: number | null
+          ppa_start_date?: string | null
+          project_id?: string
+          project_name: string
+          project_type?: string | null
+          roof_type?: string | null
+          shadow_free_area?: boolean | null
+          status?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          area_available_sqft?: number | null
+          avg_power_consumption_kwh?: number | null
+          billing_model?: string | null
+          corporate_id?: string
+          created_at?: string
+          desired_solar_offset_percentage?: number | null
+          estimated_capacity_kw?: number | null
+          health_status?: string | null
+          land_ownership_type?: string | null
+          last_maintenance_date?: string | null
+          lease_duration_years?: number | null
+          lease_end_date?: string | null
+          lease_start_date?: string | null
+          location?: string
+          next_maintenance_date?: string | null
+          peak_load_kw?: number | null
+          ppa_end_date?: string | null
+          ppa_rate?: number | null
+          ppa_start_date?: string | null
+          project_id?: string
+          project_name?: string
+          project_type?: string | null
+          roof_type?: string | null
+          shadow_free_area?: boolean | null
+          status?: string | null
+        }
+        Relationships: []
+      }
+      referral_analytics: {
+        Row: {
+          email: string | null
+          id: string
+          pending_referrals: number | null
+          referral_code: string | null
+          successful_referrals: number | null
+          total_earned: number | null
+          total_referrals: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          email?: string | null
+          id: string
+          pending_referrals?: number | null
+          referral_code?: string | null
+          successful_referrals?: number | null
+          total_earned?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          email?: string | null
+          id?: string
+          pending_referrals?: number | null
+          referral_code?: string | null
+          successful_referrals?: number | null
+          total_earned?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_analytics_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referee_id: string
+          referrer_id: string
+          reward_amount: number | null
+          status: Database["public"]["Enums"]["referral_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referee_id: string
+          referrer_id: string
+          reward_amount?: number | null
+          status?: Database["public"]["Enums"]["referral_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referee_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          status?: Database["public"]["Enums"]["referral_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referee_id_fkey"
+            columns: ["referee_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -493,98 +581,17 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
-      },
-      referrals: {
-        Row: {
-          created_at: string
-          id: string
-          referee_id: string
-          referrer_id: string
-          reward_amount: number | null
-          status: Database["public"]["Enums"]["referral_status"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          referee_id: string
-          referrer_id: string
-          reward_amount?: number | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          referee_id?: string
-          referrer_id?: string
-          reward_amount?: number | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "referrals_referee_id_fkey"
-            columns: ["referee_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "referrals_referrer_id_fkey"
-            columns: ["referrer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
-      referral_analytics: {
-        Row: {
-          email: string | null
-          id: string
-          pending_referrals: number | null
-          referral_code: string | null
-          successful_referrals: number | null
-          total_earned: number | null
-          total_referrals: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          email?: string | null
-          id: string
-          pending_referrals?: number | null
-          referral_code?: string | null
-          successful_referrals?: number | null
-          total_earned?: number | null
-          total_referrals?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          email?: string | null
-          id?: string
-          pending_referrals?: number | null
-          referral_code?: string | null
-          successful_referrals?: number | null
-          total_earned?: number | null
-          total_referrals?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "referral_analytics_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      },
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_funds: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: Json
+      }
+      generate_unique_referral_code: { Args: never; Returns: string }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -596,26 +603,42 @@ export type Database = {
         }
         Returns: boolean
       }
+      invest_in_asset: {
+        Args: {
+          p_amount: number
+          p_asset_id: string
+          p_expected_returns: number
+          p_investor_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "investor" | "corporate" | "nbfc" | "implementer" | "admin"
       asset_status:
-      | "planning"
-      | "under_construction"
-      | "operational"
-      | "maintenance"
+        | "planning"
+        | "under_construction"
+        | "operational"
+        | "maintenance"
       funding_status:
-      | "sanctioned"
-      | "partially_disbursed"
-      | "fully_disbursed"
-      | "closed"
+        | "sanctioned"
+        | "partially_disbursed"
+        | "fully_disbursed"
+        | "closed"
       investment_status: "committed" | "deployed" | "returned"
       kyc_status: "pending" | "approved" | "rejected"
       milestone_status: "pending" | "completed" | "delayed"
+      referral_status: "registered" | "pending" | "successful"
       risk_score: "low" | "medium" | "high"
       transaction_status: "pending" | "completed" | "failed"
-      transaction_type: "investment" | "return" | "disbursement" | "billing" | "deposit" | "withdrawal" | "referral_bonus"
-      referral_status: "registered" | "pending" | "successful"
+      transaction_type:
+        | "investment"
+        | "return"
+        | "disbursement"
+        | "billing"
+        | "deposit"
+        | "withdrawal"
+        | "referral_bonus"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -629,116 +652,116 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-  : never = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-  ? R
-  : never
+    ? R
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : never
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
+      Insert: infer I
+    }
+    ? I
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U
-  }
-  ? U
-  : never
+      Update: infer U
+    }
+    ? U
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema["Enums"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema["CompositeTypes"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
@@ -759,10 +782,18 @@ export const Constants = {
       investment_status: ["committed", "deployed", "returned"],
       kyc_status: ["pending", "approved", "rejected"],
       milestone_status: ["pending", "completed", "delayed"],
+      referral_status: ["registered", "pending", "successful"],
       risk_score: ["low", "medium", "high"],
       transaction_status: ["pending", "completed", "failed"],
-      transaction_type: ["investment", "return", "disbursement", "billing", "deposit", "withdrawal", "referral_bonus"],
-      referral_status: ["registered", "pending", "successful"],
+      transaction_type: [
+        "investment",
+        "return",
+        "disbursement",
+        "billing",
+        "deposit",
+        "withdrawal",
+        "referral_bonus",
+      ],
     },
   },
 } as const
