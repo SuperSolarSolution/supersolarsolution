@@ -60,6 +60,8 @@ export default function InvestorWallet() {
   const successfulReferrals = referralStats?.successfulReferrals || 0;
   const pendingReferrals = referralStats?.pendingReferrals || 0;
 
+  const referralLink = `${window.location.origin}/register?ref=${referralCode}`;
+
   const handleCopyReferral = () => {
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
@@ -68,6 +70,36 @@ export default function InvestorWallet() {
       description: 'Referral code copied to clipboard',
     });
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleShareReferral = async () => {
+    const shareData = {
+      title: 'Join S³ - Super Solar Solutions',
+      text: `Join me on S³ and invest in solar energy! Use my referral code ${referralCode} and we both earn ₹250 bonus. Sign up now:`,
+      url: referralLink,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy link to clipboard
+        await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
+        toast({
+          title: 'Link Copied!',
+          description: 'Referral link copied to clipboard. Share it with your friends!',
+        });
+      }
+    } catch (error) {
+      // User cancelled or error
+      if ((error as Error).name !== 'AbortError') {
+        await navigator.clipboard.writeText(referralLink);
+        toast({
+          title: 'Link Copied!',
+          description: 'Referral link copied to clipboard.',
+        });
+      }
+    }
   };
 
   const handleAddMoney = () => {
@@ -302,7 +334,7 @@ export default function InvestorWallet() {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">3</span>
-                      You both earn ₹500 bonus on successful investment!
+                      You both earn ₹250 bonus on successful investment!
                     </li>
                   </ul>
                 </div>
@@ -328,7 +360,7 @@ export default function InvestorWallet() {
                     Waiting for first investment from referred users
                   </p>
                 </div>
-                <Button className="w-full">
+                <Button className="w-full" onClick={handleShareReferral}>
                   <Gift className="mr-2 h-4 w-4" />
                   Share Referral Link
                 </Button>
