@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useTransactions, useAddFunds } from '@/hooks/useTransactions';
+import { useTransactions } from '@/hooks/useTransactions';
+import { useRazorpay } from '@/hooks/useRazorpay';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -44,8 +45,25 @@ import { useToast } from '@/hooks/use-toast';
 export default function InvestorWallet() {
   const { profile, user } = useAuth();
   const { data: transactions, isLoading } = useTransactions();
-  const { mutate: addFunds, isPending: isAddingFunds } = useAddFunds();
   const { toast } = useToast();
+  const { pay: razorpayPay, isPending: isAddingFunds } = useRazorpay({
+    onSuccess: (amount) => {
+      toast({
+        title: 'Money Added',
+        description: `₹${amount.toLocaleString()} added to your wallet successfully.`,
+      });
+      setAddMoneyAmount('');
+    },
+    onError: (error) => {
+      if (error !== 'Payment cancelled') {
+        toast({
+          title: 'Payment Failed',
+          description: error,
+          variant: 'destructive',
+        });
+      }
+    },
+  });
   const { data: referralStats } = useReferrals();
   const [addMoneyAmount, setAddMoneyAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -103,27 +121,13 @@ export default function InvestorWallet() {
   };
 
   const handleAddMoney = () => {
-    if (!addMoneyAmount) return;
-
-    addFunds(Number(addMoneyAmount), {
-      onSuccess: () => {
-        toast({
-          title: 'Money Added',
-          description: `₹${addMoneyAmount} added to your wallet successfully.`,
-        });
-        setAddMoneyAmount('');
-        // Close dialog - logic needs to be handled via state or ref if dialog is controlled, 
-        // but here it's uncontrolled so we rely on toast and reset.
-        // ideally we should control the dialog open state.
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: error.message,
-          variant: 'destructive',
-        });
-      }
-    });
+    if (!addMoneyAmount || !user) return;
+    razorpayPay(
+      Number(addMoneyAmount),
+      user.id,
+      profile?.full_name || '',
+      profile?.email || user.email || ''
+    );
   };
 
   const handleWithdraw = () => {
