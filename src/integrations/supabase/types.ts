@@ -277,6 +277,9 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_ifsc: string | null
           created_at: string
           email: string
           full_name: string
@@ -290,6 +293,9 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -303,6 +309,9 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -582,6 +591,48 @@ export type Database = {
         }
         Relationships: []
       }
+      withdrawal_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          bank_account_holder: string
+          bank_account_number: string
+          bank_ifsc: string
+          created_at: string
+          id: string
+          razorpay_payout_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          bank_account_holder: string
+          bank_account_number: string
+          bank_ifsc: string
+          created_at?: string
+          id?: string
+          razorpay_payout_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          bank_account_holder?: string
+          bank_account_number?: string
+          bank_ifsc?: string
+          created_at?: string
+          id?: string
+          razorpay_payout_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -609,6 +660,16 @@ export type Database = {
           p_asset_id: string
           p_expected_returns: number
           p_investor_id: string
+        }
+        Returns: Json
+      }
+      request_withdrawal: {
+        Args: {
+          p_amount: number
+          p_bank_account_holder: string
+          p_bank_account_number: string
+          p_bank_ifsc: string
+          p_user_id: string
         }
         Returns: Json
       }
