@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useRazorpay } from '@/hooks/useRazorpay';
+import { useWithdrawal } from '@/hooks/useWithdrawal';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -19,7 +20,8 @@ import {
   Plus,
   Send,
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  Building2
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -67,7 +69,13 @@ export default function InvestorWallet() {
   const { data: referralStats } = useReferrals();
   const [addMoneyAmount, setAddMoneyAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [bankAccountNumber, setBankAccountNumber] = useState(profile?.bank_account_number || '');
+  const [bankIfsc, setBankIfsc] = useState(profile?.bank_ifsc || '');
+  const [bankAccountHolder, setBankAccountHolder] = useState(profile?.bank_account_holder || '');
   const [copied, setCopied] = useState(false);
+  const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
+
+  const { mutate: requestWithdrawal, isPending: isWithdrawing } = useWithdrawal();
 
   // Use real wallet balance from profile
   const walletBalance = profile?.wallet_balance || 0;
@@ -131,10 +139,33 @@ export default function InvestorWallet() {
   };
 
   const handleWithdraw = () => {
-    toast({
-      title: 'Withdrawal Initiated',
-      description: 'Your withdrawal request has been submitted',
-    });
+    if (!withdrawAmount || !user || !bankAccountNumber || !bankIfsc || !bankAccountHolder) return;
+
+    requestWithdrawal(
+      {
+        amount: Number(withdrawAmount),
+        bankAccountNumber,
+        bankIfsc,
+        bankAccountHolder,
+      },
+      {
+        onSuccess: () => {
+          toast({
+            title: 'Withdrawal Requested',
+            description: `₹${Number(withdrawAmount).toLocaleString()} withdrawal request submitted. Funds will be transferred within 2-3 business days.`,
+          });
+          setWithdrawAmount('');
+          setWithdrawDialogOpen(false);
+        },
+        onError: (error) => {
+          toast({
+            title: 'Withdrawal Failed',
+            description: error.message,
+            variant: 'destructive',
+          });
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -212,7 +243,7 @@ export default function InvestorWallet() {
                   </DialogContent>
                 </Dialog>
 
-                <Dialog>
+                <Dialog open={withdrawDialogOpen} onOpenChange={setWithdrawDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="secondary" size="sm">
                       <Send className="mr-2 h-4 w-4" />
@@ -233,19 +264,64 @@ export default function InvestorWallet() {
                         <Label>Withdrawal Amount (₹)</Label>
                         <Input
                           type="number"
-                          placeholder="Enter amount"
+                          placeholder="Min ₹100"
                           value={withdrawAmount}
                           onChange={(e) => setWithdrawAmount(e.target.value)}
                           max={walletBalance}
                         />
                       </div>
+
+                      <div className="space-y-3 border-t pt-4">
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          <Building2 className="h-4 w-4" />
+                          Bank Account Details
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Account Holder Name</Label>
+                          <Input
+                            placeholder="Enter account holder name"
+                            value={bankAccountHolder}
+                            onChange={(e) => setBankAccountHolder(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Account Number</Label>
+                          <Input
+                            placeholder="Enter bank account number"
+                            value={bankAccountNumber}
+                            onChange={(e) => setBankAccountNumber(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>IFSC Code</Label>
+                          <Input
+                            placeholder="e.g. SBIN0001234"
+                            value={bankIfsc}
+                            onChange={(e) => setBankIfsc(e.target.value.toUpperCase())}
+                            maxLength={11}
+                          />
+                        </div>
+                      </div>
+
                       <p className="text-sm text-muted-foreground">
-                        Funds will be transferred to your registered bank account within 2-3 business days.
+                        Funds will be transferred to your bank account within 2-3 business days.
                       </p>
                     </div>
                     <DialogFooter>
-                      <Button onClick={handleWithdraw} disabled={!withdrawAmount || Number(withdrawAmount) > walletBalance}>
-                        Withdraw
+                      <Button
+                        onClick={handleWithdraw}
+                        disabled={
+                          isWithdrawing ||
+                          !withdrawAmount ||
+                          Number(withdrawAmount) < 100 ||
+                          Number(withdrawAmount) > walletBalance ||
+                          !bankAccountNumber ||
+                          !bankIfsc ||
+                          !bankAccountHolder
+                        }
+                      >
+                        {isWithdrawing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Withdraw ₹{withdrawAmount ? Number(withdrawAmount).toLocaleString() : '0'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>

@@ -14,6 +14,9 @@ interface Profile {
   avatar_url: string | null;
   wallet_balance: number;
   referral_code: string;
+  bank_account_number: string | null;
+  bank_ifsc: string | null;
+  bank_account_holder: string | null;
 }
 
 interface AuthContextType {
