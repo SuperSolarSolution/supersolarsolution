@@ -277,7 +277,7 @@ export default function InvestorSettings() {
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>KYC Verification</CardTitle>
-                    <CardDescription>Complete your KYC to start investing</CardDescription>
+                    <CardDescription>Complete your KYC to enable withdrawals</CardDescription>
                   </div>
                   <Badge variant="outline" className={`${kycStatusConfig[kycStatus].bg} ${kycStatusConfig[kycStatus].color}`}>
                     <KycIcon className="mr-1 h-3 w-3" />
@@ -291,7 +291,7 @@ export default function InvestorSettings() {
                     <CheckCircle2 className="h-12 w-12 mx-auto text-green-600 mb-3" />
                     <h3 className="font-semibold text-green-600">KYC Verified</h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Your identity has been verified. You can now invest in all solar assets.
+                      Your identity has been verified. You can withdraw funds freely.
                     </p>
                   </div>
                 ) : kycStatus === 'rejected' ? (
@@ -307,7 +307,7 @@ export default function InvestorSettings() {
                   <div className="space-y-6">
                     <div className="p-4 rounded-lg bg-yellow-500/10">
                       <p className="text-sm text-yellow-700">
-                        Complete your KYC verification to unlock all investment features.
+                        KYC verification is required to withdraw funds. Complete it below.
                       </p>
                     </div>
 
