@@ -64,6 +64,7 @@ const menuItems: Record<UserRole, { label: string; icon: React.ComponentType<any
   admin: [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard/admin' },
     { label: 'Users', icon: Users, path: '/dashboard/admin/users' },
+    { label: 'Withdrawals', icon: Wallet, path: '/dashboard/admin/withdrawals' },
     { label: 'Solar Assets', icon: Sun, path: '/dashboard/admin/assets' },
     { label: 'Transactions', icon: Wallet, path: '/dashboard/admin/transactions' },
     { label: 'Compliance', icon: Shield, path: '/dashboard/admin/compliance' },

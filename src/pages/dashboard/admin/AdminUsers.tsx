@@ -50,7 +50,7 @@ export default function AdminUsers() {
         return matchesSearch && matchesRole;
     });
 
-    const handleKYCAction = async (userId: string, status: 'approved' | 'rejected') => {
+    const handleKYCAction = async (userId: string, status: 'pending' | 'approved' | 'rejected') => {
         try {
             await updateKYCStatus.mutateAsync({ userId, status });
             toast({
@@ -195,28 +195,39 @@ export default function AdminUsers() {
                                                             <UserCog className="h-4 w-4" />
                                                         </Button>
 
-                                                        {user.kyc_status === 'pending' && (
-                                                            <>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                                                                    onClick={() => handleKYCAction(user.id, 'approved')}
-                                                                    title="Approve KYC"
-                                                                >
-                                                                    <CheckCircle className="h-4 w-4" />
-                                                                </Button>
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                                                    onClick={() => handleKYCAction(user.id, 'rejected')}
-                                                                    title="Reject KYC"
-                                                                >
-                                                                    <XCircle className="h-4 w-4" />
-                                                                </Button>
-                                                            </>
-                                                        )}
+                                                         {user.kyc_status !== 'approved' && (
+                                                             <Button
+                                                                 variant="ghost"
+                                                                 size="icon"
+                                                                 className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                                 onClick={() => handleKYCAction(user.id, 'approved')}
+                                                                 title="Approve KYC"
+                                                             >
+                                                                 <CheckCircle className="h-4 w-4" />
+                                                             </Button>
+                                                         )}
+                                                         {user.kyc_status !== 'rejected' && (
+                                                             <Button
+                                                                 variant="ghost"
+                                                                 size="icon"
+                                                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                                                 onClick={() => handleKYCAction(user.id, 'rejected')}
+                                                                 title="Reject KYC"
+                                                             >
+                                                                 <XCircle className="h-4 w-4" />
+                                                             </Button>
+                                                         )}
+                                                         {user.kyc_status !== 'pending' && (
+                                                             <Button
+                                                                 variant="ghost"
+                                                                 size="icon"
+                                                                 className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                                                                 onClick={() => handleKYCAction(user.id, 'pending')}
+                                                                 title="Reset KYC to Pending"
+                                                             >
+                                                                 <Shield className="h-4 w-4" />
+                                                             </Button>
+                                                         )}
                                                     </div>
                                                 </TableCell>
                                             </TableRow>

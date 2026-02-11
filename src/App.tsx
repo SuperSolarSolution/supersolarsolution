@@ -30,6 +30,7 @@ import AdminUsers from "./pages/dashboard/admin/AdminUsers";
 import AdminAssets from "./pages/dashboard/admin/AdminAssets";
 import AdminTransactions from "./pages/dashboard/admin/AdminTransactions";
 import AdminSettings from "./pages/dashboard/admin/AdminSettings";
+import AdminWithdrawals from "./pages/dashboard/admin/AdminWithdrawals";
 import ProjectList from "./pages/dashboard/corporate/projects/ProjectList";
 import ProjectCreate from "./pages/dashboard/corporate/projects/ProjectCreate";
 import PowerGeneration from "./pages/dashboard/corporate/PowerGeneration";
@@ -153,8 +154,9 @@ const App = () => (
                                         <Route index element={<AdminOverview />} />
                                         <Route path="users" element={<AdminUsers />} />
                                         <Route path="assets" element={<AdminAssets />} />
-                                        <Route path="transactions" element={<AdminTransactions />} />
-                                        <Route path="settings" element={<AdminSettings />} />
+                                         <Route path="withdrawals" element={<AdminWithdrawals />} />
+                                         <Route path="transactions" element={<AdminTransactions />} />
+                                         <Route path="settings" element={<AdminSettings />} />
                                         {/* Fallback for yet-to-be-created pages */}
                                         <Route path="*" element={<AdminOverview />} />
                                     </Routes>
