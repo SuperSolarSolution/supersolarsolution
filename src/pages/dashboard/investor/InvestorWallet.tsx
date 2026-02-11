@@ -141,6 +141,15 @@ export default function InvestorWallet() {
   const handleWithdraw = () => {
     if (!withdrawAmount || !user || !bankAccountNumber || !bankIfsc || !bankAccountHolder) return;
 
+    if (profile?.kyc_status !== 'approved') {
+      toast({
+        title: 'KYC Required',
+        description: 'Please complete your KYC verification in Settings before withdrawing funds.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     requestWithdrawal(
       {
         amount: Number(withdrawAmount),
@@ -256,6 +265,11 @@ export default function InvestorWallet() {
                       <DialogDescription>Transfer funds to your bank account</DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4 py-4">
+                      {profile?.kyc_status !== 'approved' && (
+                        <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+                          ⚠️ KYC verification is required to withdraw funds. Please complete KYC in <a href="/dashboard/investor/settings" className="underline font-medium">Settings</a>.
+                        </div>
+                      )}
                       <div className="p-4 rounded-lg bg-muted">
                         <p className="text-sm text-muted-foreground">Available Balance</p>
                         <p className="text-2xl font-bold">₹{walletBalance.toLocaleString()}</p>

@@ -172,7 +172,7 @@ export default function Register() {
                   disabled={loading}
                 />
                 <Label htmlFor="terms" className="text-sm text-muted-foreground leading-tight">
-                  I agree to the Terms of Service, Privacy Policy, and understand that KYC verification is required before investing.
+                  I agree to the Terms of Service and Privacy Policy.
                 </Label>
               </div>
               <Button type="submit" className="w-full" disabled={!formData.acceptTerms || loading}>
