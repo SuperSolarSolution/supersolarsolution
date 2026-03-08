@@ -6,13 +6,19 @@ import { cn } from '@/lib/utils';
 interface KPICardProps {
   metric: KPIMetric;
   icon?: React.ComponentType<{ className?: string }>;
+  index?: number;
 }
 
-export function KPICard({ metric, icon: Icon }: KPICardProps) {
+export function KPICard({ metric, icon: Icon, index = 0 }: KPICardProps) {
   const TrendIcon = metric.trend === 'up' ? TrendingUp : metric.trend === 'down' ? TrendingDown : Minus;
   
   return (
-    <Card className="relative overflow-hidden">
+    <Card className={cn(
+      "relative overflow-hidden opacity-0 animate-fade-in-up",
+      `animate-stagger-${index + 1}`
+    )}>
+      {/* Accent line */}
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/60 via-primary to-primary/60" />
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
@@ -29,7 +35,7 @@ export function KPICard({ metric, icon: Icon }: KPICardProps) {
             )}
           </div>
           {Icon && (
-            <div className="rounded-lg bg-primary/10 p-3">
+            <div className="rounded-xl bg-primary/10 p-3 shadow-sm shadow-primary/10">
               <Icon className="h-5 w-5 text-primary" />
             </div>
           )}

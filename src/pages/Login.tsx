@@ -63,7 +63,7 @@ export default function Login() {
     <div className="min-h-screen bg-background">
       <Header />
       <main className="container flex items-center justify-center py-16">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md opacity-0 animate-scale-in">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
               <Sun className="h-6 w-6 text-primary-foreground" />

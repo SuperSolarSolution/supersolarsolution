@@ -201,7 +201,7 @@ export default function InvestorWallet() {
         </div>
 
         {/* Wallet Balance Card */}
-        <Card className="bg-gradient-to-br from-primary to-primary/80">
+        <Card className="bg-gradient-to-br from-primary to-primary/80 opacity-0 animate-scale-in border-0 shadow-lg">
           <CardContent className="pt-6">
             <div className="flex items-start justify-between">
               <div className="text-primary-foreground">

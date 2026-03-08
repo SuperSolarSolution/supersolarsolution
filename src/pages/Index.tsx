@@ -86,25 +86,25 @@ export default function Index() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="container relative">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary opacity-0 animate-fade-in-up">
               <Sun className="h-4 w-4" />
               India's Solar Asset Financing Platform
             </div>
-            <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl opacity-0 animate-fade-in-up animate-stagger-2">
               S<sup className="text-2xl md:text-3xl">3</sup> – Super Solar Solutions
             </h1>
-            <p className="mb-8 text-lg text-muted-foreground md:text-xl">
+            <p className="mb-8 text-lg text-muted-foreground md:text-xl opacity-0 animate-fade-in-up animate-stagger-3">
               A secure, auditable platform connecting P2P investors, NBFCs, corporates, and implementers 
               for structured solar asset financing and leasing.
             </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" asChild>
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center opacity-0 animate-fade-in-up animate-stagger-4">
+              <Button size="lg" asChild className="active:scale-95 transition-transform">
                 <Link to="/calculator">
                   Calculate Your ROI
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="active:scale-95 transition-transform">
                 <Link to="/register">Get Started</Link>
               </Button>
             </div>

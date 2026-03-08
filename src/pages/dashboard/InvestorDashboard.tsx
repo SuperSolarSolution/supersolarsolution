@@ -106,7 +106,7 @@ export default function InvestorDashboard() {
         {/* KPI Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {kpis.map((metric, idx) => (
-            <KPICard key={metric.label} metric={metric} icon={icons[idx]} />
+            <KPICard key={metric.label} metric={metric} icon={icons[idx]} index={idx} />
           ))}
         </div>
 

@@ -153,12 +153,12 @@ export default function InvestorAssets() {
         {/* Asset Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredAssets.length > 0 ? (
-            filteredAssets.map((asset) => {
+            filteredAssets.map((asset, idx) => {
               const fundingProgress = (Number(asset.funded_amount) / Number(asset.total_investment)) * 100;
               return (
-                <Card key={asset.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                  <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    <Sun className="h-16 w-16 text-primary/40" />
+                <Card key={asset.id} className={`overflow-hidden opacity-0 animate-fade-in-up animate-stagger-${Math.min(idx + 1, 6)}`}>
+                  <div className="h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center shimmer-bg animate-shimmer">
+                    <Sun className="h-16 w-16 text-primary/30 animate-float" />
                   </div>
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-2">
