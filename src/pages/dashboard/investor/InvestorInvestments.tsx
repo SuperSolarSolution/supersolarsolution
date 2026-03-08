@@ -62,32 +62,26 @@ export default function InvestorInvestments() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2 md:gap-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Invested</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">₹{(totalInvested / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-muted-foreground mt-1">Across {investments?.length || 0} investments</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Total Invested</p>
+              <p className="text-lg md:text-2xl font-bold mt-0.5">₹{(totalInvested / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Across {investments?.length || 0} investments</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Expected Returns</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-primary">₹{(totalExpected / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-green-600 mt-1">+{((totalExpected / totalInvested - 1) * 100 || 0).toFixed(1)}% projected</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Expected</p>
+              <p className="text-lg md:text-2xl font-bold text-primary mt-0.5">₹{(totalExpected / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-green-600 mt-0.5 hidden md:block">+{((totalExpected / totalInvested - 1) * 100 || 0).toFixed(1)}%</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Actual Returns</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-600">₹{(totalActual / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-muted-foreground mt-1">Credited to wallet</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Actual</p>
+              <p className="text-lg md:text-2xl font-bold text-green-600 mt-0.5">₹{(totalActual / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Credited to wallet</p>
             </CardContent>
           </Card>
         </div>
