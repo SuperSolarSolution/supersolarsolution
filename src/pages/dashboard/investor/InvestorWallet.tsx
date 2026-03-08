@@ -20,8 +20,9 @@ import {
   Plus,
   Send,
   Loader2,
-  CheckCircle2,
-  Building2
+  Building2,
+  Clock,
+  Ban
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
