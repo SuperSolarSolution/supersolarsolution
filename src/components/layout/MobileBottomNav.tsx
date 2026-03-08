@@ -55,8 +55,8 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
   const navItems = roleNavItems[role];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/90 md:hidden">
-      <div className="flex items-center justify-around py-2 px-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong md:hidden">
+      <div className="flex items-center justify-around py-1.5 px-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== `/dashboard/${role}` && location.pathname.startsWith(item.path));
@@ -66,20 +66,31 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
               key={item.path}
               to={item.path}
               className={cn(
-                'flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all min-w-[60px]',
+                'flex flex-col items-center justify-center py-2 px-3 rounded-2xl transition-all duration-300 min-w-[56px] active:scale-90',
                 isActive 
-                  ? 'text-primary bg-primary/10' 
+                  ? 'text-primary' 
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <item.icon className={cn('h-5 w-5', isActive && 'scale-110')} />
-              <span className="text-[10px] font-medium mt-1 leading-none">{item.label}</span>
+              <div className={cn(
+                'relative flex items-center justify-center w-10 h-7 rounded-full transition-all duration-300',
+                isActive && 'bg-primary/15'
+              )}>
+                <item.icon className={cn(
+                  'h-[18px] w-[18px] transition-transform duration-300',
+                  isActive && 'scale-110'
+                )} />
+              </div>
+              <span className={cn(
+                "text-[10px] font-medium mt-0.5 leading-none transition-all duration-300",
+                isActive && 'font-semibold'
+              )}>{item.label}</span>
             </Link>
           );
         })}
       </div>
       {/* Safe area padding for devices with home indicator */}
-      <div className="h-safe-area-inset-bottom bg-card" />
+      <div className="pb-safe bg-transparent" />
     </nav>
   );
 }

@@ -18,7 +18,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
         <Header showAuth={false} />
         <DashboardSidebar role={role} />
         <main className="ml-64 pt-16">
-          <div className="p-6">
+          <div className="p-6 animate-fade-in">
             {children}
           </div>
         </main>
@@ -27,8 +27,8 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
       {/* Mobile Layout */}
       <div className="md:hidden">
         <MobileHeader role={role} />
-        <main className="pb-20">
-          <div className="p-4">
+        <main className="pb-24">
+          <div className="p-4 animate-fade-in">
             {children}
           </div>
         </main>
