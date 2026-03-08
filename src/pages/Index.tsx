@@ -97,14 +97,14 @@ export default function Index() {
               A secure, auditable platform connecting P2P investors, NBFCs, corporates, and implementers 
               for structured solar asset financing and leasing.
             </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Button size="lg" asChild>
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center opacity-0 animate-fade-in-up animate-stagger-4">
+              <Button size="lg" asChild className="active:scale-95 transition-transform">
                 <Link to="/calculator">
                   Calculate Your ROI
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="active:scale-95 transition-transform">
                 <Link to="/register">Get Started</Link>
               </Button>
             </div>
