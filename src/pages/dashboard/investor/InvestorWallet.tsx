@@ -22,7 +22,8 @@ import {
   Loader2,
   Building2,
   Clock,
-  Ban
+  Ban,
+  CheckCircle2
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
