@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useRazorpay } from '@/hooks/useRazorpay';
-import { useWithdrawal } from '@/hooks/useWithdrawal';
+import { useWithdrawal, useWithdrawalRequests } from '@/hooks/useWithdrawal';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -20,8 +20,10 @@ import {
   Plus,
   Send,
   Loader2,
-  CheckCircle2,
-  Building2
+  Building2,
+  Clock,
+  Ban,
+  CheckCircle2
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -76,7 +78,7 @@ export default function InvestorWallet() {
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
 
   const { mutate: requestWithdrawal, isPending: isWithdrawing } = useWithdrawal();
-
+  const { data: withdrawalRequests } = useWithdrawalRequests();
   // Use real wallet balance from profile
   const walletBalance = profile?.wallet_balance || 0;
 
@@ -460,6 +462,76 @@ export default function InvestorWallet() {
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Withdrawal Requests History */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Withdrawal Requests</CardTitle>
+            <CardDescription>Track the status of your withdrawal requests</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Bank Account</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Admin Notes</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {withdrawalRequests && withdrawalRequests.length > 0 ? (
+                  withdrawalRequests.map((wr) => (
+                    <TableRow key={wr.id}>
+                      <TableCell>{new Date(wr.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell className="font-semibold">₹{Number(wr.amount).toLocaleString()}</TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <p>{wr.bank_account_holder}</p>
+                          <p className="text-muted-foreground text-xs">A/C: ****{wr.bank_account_number.slice(-4)}</p>
+                          <p className="text-muted-foreground text-xs">IFSC: {wr.bank_ifsc}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={
+                            wr.status === 'completed'
+                              ? 'bg-green-500/10 text-green-600'
+                              : wr.status === 'rejected'
+                              ? 'bg-destructive/10 text-destructive'
+                              : 'bg-yellow-500/10 text-yellow-600'
+                          }
+                        >
+                          <span className="mr-1">
+                            {wr.status === 'completed' ? (
+                              <CheckCircle2 className="inline h-3 w-3" />
+                            ) : wr.status === 'rejected' ? (
+                              <Ban className="inline h-3 w-3" />
+                            ) : (
+                              <Clock className="inline h-3 w-3" />
+                            )}
+                          </span>
+                          {wr.status.charAt(0).toUpperCase() + wr.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {wr.admin_notes || '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      No withdrawal requests yet
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
