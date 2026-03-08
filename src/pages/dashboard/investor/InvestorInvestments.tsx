@@ -112,11 +112,11 @@ export default function InvestorInvestments() {
               const progress = (Number(investment.actual_returns) / Number(investment.expected_returns)) * 100;
               return (
                 <Card key={investment.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 md:p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-lg">
+                        <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-2 flex-wrap">
+                          <h3 className="font-semibold text-base md:text-lg">
                             {investment.solar_assets?.name || 'Solar Asset'}
                           </h3>
                           <Badge variant="outline" className={statusColors[investment.status]}>
