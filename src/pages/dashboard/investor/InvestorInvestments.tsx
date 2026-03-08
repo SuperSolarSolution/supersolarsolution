@@ -49,13 +49,14 @@ export default function InvestorInvestments() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">My Investments</h1>
-            <p className="text-muted-foreground">Track and manage your solar investments</p>
+            <h1 className="text-xl md:text-2xl font-bold">My Investments</h1>
+            <p className="text-sm text-muted-foreground">Track and manage your solar investments</p>
           </div>
-          <Button asChild>
+          <Button asChild size="sm">
             <Link to="/dashboard/investor/assets">
-              <ArrowUpRight className="mr-2 h-4 w-4" />
-              New Investment
+              <ArrowUpRight className="mr-1 md:mr-2 h-4 w-4" />
+              <span className="hidden md:inline">New Investment</span>
+              <span className="md:hidden">Invest</span>
             </Link>
           </Button>
         </div>
