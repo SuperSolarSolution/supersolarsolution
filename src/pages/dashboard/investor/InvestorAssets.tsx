@@ -59,15 +59,13 @@ export default function InvestorAssets() {
     <DashboardLayout role="investor">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Solar Assets</h1>
-            <p className="text-muted-foreground">Browse and invest in solar projects</p>
-          </div>
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold">Solar Assets</h1>
+          <p className="text-sm text-muted-foreground">Browse and invest in solar projects</p>
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="space-y-3 md:space-y-0 md:flex md:flex-row md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -77,9 +75,9 @@ export default function InvestorAssets() {
               className="pl-10"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-32 md:w-40 shrink-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -91,7 +89,7 @@ export default function InvestorAssets() {
               </SelectContent>
             </Select>
             <Select value={riskFilter} onValueChange={setRiskFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-28 md:w-32 shrink-0">
                 <SelectValue placeholder="Risk" />
               </SelectTrigger>
               <SelectContent>
@@ -104,8 +102,8 @@ export default function InvestorAssets() {
           </div>
         </div>
 
-        {/* Summary Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        {/* Summary Stats - 2x2 on mobile */}
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
