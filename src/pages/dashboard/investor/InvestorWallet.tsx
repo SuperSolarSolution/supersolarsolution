@@ -78,7 +78,7 @@ export default function InvestorWallet() {
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
 
   const { mutate: requestWithdrawal, isPending: isWithdrawing } = useWithdrawal();
-
+  const { data: withdrawalRequests } = useWithdrawalRequests();
   // Use real wallet balance from profile
   const walletBalance = profile?.wallet_balance || 0;
 
