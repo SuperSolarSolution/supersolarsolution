@@ -86,14 +86,14 @@ export default function Index() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/10" />
         <div className="container relative">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary opacity-0 animate-fade-in-up">
               <Sun className="h-4 w-4" />
               India's Solar Asset Financing Platform
             </div>
-            <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl opacity-0 animate-fade-in-up animate-stagger-2">
               S<sup className="text-2xl md:text-3xl">3</sup> – Super Solar Solutions
             </h1>
-            <p className="mb-8 text-lg text-muted-foreground md:text-xl">
+            <p className="mb-8 text-lg text-muted-foreground md:text-xl opacity-0 animate-fade-in-up animate-stagger-3">
               A secure, auditable platform connecting P2P investors, NBFCs, corporates, and implementers 
               for structured solar asset financing and leasing.
             </p>
