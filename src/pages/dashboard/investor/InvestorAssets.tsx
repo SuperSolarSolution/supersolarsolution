@@ -155,10 +155,10 @@ export default function InvestorAssets() {
               const fundingProgress = (Number(asset.funded_amount) / Number(asset.total_investment)) * 100;
               return (
                 <Card key={asset.id} className={`overflow-hidden opacity-0 animate-fade-in-up animate-stagger-${Math.min(idx + 1, 6)}`}>
-                  <div className="h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center shimmer-bg animate-shimmer">
-                    <Sun className="h-16 w-16 text-primary/30 animate-float" />
+                  <div className="h-24 md:h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center shimmer-bg animate-shimmer">
+                    <Sun className="h-12 w-12 md:h-16 md:w-16 text-primary/30 animate-float" />
                   </div>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold">{asset.name}</h3>
                       <Badge variant="outline" className={statusColors[asset.status]}>

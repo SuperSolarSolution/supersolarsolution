@@ -127,22 +127,22 @@ export default function InvestorInvestments() {
                           {investment.solar_assets?.location || 'Location not specified'}
                         </p>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                           <div>
-                            <p className="text-xs text-muted-foreground">Investment Amount</p>
-                            <p className="font-semibold">₹{(Number(investment.amount) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Invested</p>
+                            <p className="text-sm md:text-base font-semibold">₹{(Number(investment.amount) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Expected Returns</p>
-                            <p className="font-semibold text-primary">₹{(Number(investment.expected_returns) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Expected</p>
+                            <p className="text-sm md:text-base font-semibold text-primary">₹{(Number(investment.expected_returns) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Actual Returns</p>
-                            <p className="font-semibold text-green-600">₹{(Number(investment.actual_returns) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Actual</p>
+                            <p className="text-sm md:text-base font-semibold text-green-600">₹{(Number(investment.actual_returns) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Maturity Date</p>
-                            <p className="font-semibold">{new Date(investment.maturity_date).toLocaleDateString()}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Maturity</p>
+                            <p className="text-sm md:text-base font-semibold">{new Date(investment.maturity_date).toLocaleDateString()}</p>
                           </div>
                         </div>
 

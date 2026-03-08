@@ -25,10 +25,10 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
       </div>
 
       {/* Mobile Layout */}
-      <div className="md:hidden">
+      <div className="md:hidden flex flex-col min-h-screen">
         <MobileHeader role={role} />
-        <main className="pb-24">
-          <div className="p-4 animate-fade-in">
+        <main className="flex-1 pb-20 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="px-3 pt-3 pb-2 animate-fade-in">
             {children}
           </div>
         </main>

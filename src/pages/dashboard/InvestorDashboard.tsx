@@ -93,20 +93,27 @@ export default function InvestorDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Investor Dashboard</h1>
-            <p className="text-muted-foreground">Welcome back, {profile?.full_name || 'Investor'}</p>
+            <h1 className="text-xl md:text-2xl font-bold">Investor Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Welcome back, {profile?.full_name || 'Investor'}</p>
           </div>
-          <Button asChild>
+          <Button asChild size="sm" className="hidden md:inline-flex">
             <Link to="/dashboard/investor/assets">
               Explore New Assets <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+          <Button asChild size="icon" className="md:hidden h-9 w-9">
+            <Link to="/dashboard/investor/assets">
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
 
-        {/* KPI Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* KPI Cards - horizontal scroll on mobile */}
+        <div className="flex gap-3 overflow-x-auto scroll-snap-x scrollbar-hide -mx-3 px-3 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-4">
           {kpis.map((metric, idx) => (
-            <KPICard key={metric.label} metric={metric} icon={icons[idx]} index={idx} />
+            <div key={metric.label} className="min-w-[70vw] md:min-w-0">
+              <KPICard metric={metric} icon={icons[idx]} index={idx} />
+            </div>
           ))}
         </div>
 
