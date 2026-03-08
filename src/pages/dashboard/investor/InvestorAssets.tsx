@@ -105,43 +105,43 @@ export default function InvestorAssets() {
         {/* Summary Stats - 2x2 on mobile */}
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Sun className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">Total Assets</span>
+                <Sun className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                <span className="text-xs md:text-sm text-muted-foreground">Total Assets</span>
               </div>
-              <p className="text-2xl font-bold mt-2">{assets?.length || 0}</p>
+              <p className="text-lg md:text-2xl font-bold mt-1">{assets?.length || 0}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                <span className="text-sm text-muted-foreground">Total Capacity</span>
+                <Zap className="h-4 w-4 md:h-5 md:w-5 text-yellow-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Total Capacity</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {assets?.reduce((sum, a) => sum + Number(a.capacity_kw), 0).toFixed(0)} kW
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                <span className="text-sm text-muted-foreground">Avg. IRR</span>
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Avg. IRR</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {(assets?.reduce((sum, a) => sum + Number(a.expected_irr), 0) / (assets?.length || 1)).toFixed(1)}%
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-blue-500" />
-                <span className="text-sm text-muted-foreground">Operational</span>
+                <Filter className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Operational</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {assets?.filter(a => a.status === 'operational').length || 0}
               </p>
             </CardContent>
