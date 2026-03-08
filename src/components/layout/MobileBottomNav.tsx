@@ -55,7 +55,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
   const navItems = roleNavItems[role];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-strong md:hidden shadow-[0_-1px_3px_0_hsl(var(--border)/0.3)]">
       <div className="flex items-center justify-around py-1.5 px-1">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path || 

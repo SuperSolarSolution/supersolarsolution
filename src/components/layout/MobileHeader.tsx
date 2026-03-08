@@ -11,6 +11,13 @@ interface MobileHeaderProps {
   role: UserRole;
 }
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
 export function MobileHeader({ role }: MobileHeaderProps) {
   const { profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -29,14 +36,16 @@ export function MobileHeader({ role }: MobileHeaderProps) {
           </SheetContent>
         </Sheet>
 
-        <Link to="/" className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <Sun className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="text-base font-bold leading-none tracking-tight">
-            S<sup className="text-[8px]">3</sup>
-          </span>
-        </Link>
+          <div className="leading-none">
+            <p className="text-sm font-bold">
+              {getGreeting()}, {profile?.full_name?.split(' ')[0] || 'User'}
+            </p>
+          </div>
+        </div>
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="relative h-9 w-9">

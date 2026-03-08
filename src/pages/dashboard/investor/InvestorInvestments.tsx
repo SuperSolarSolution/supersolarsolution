@@ -49,44 +49,39 @@ export default function InvestorInvestments() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">My Investments</h1>
-            <p className="text-muted-foreground">Track and manage your solar investments</p>
+            <h1 className="text-xl md:text-2xl font-bold">My Investments</h1>
+            <p className="text-sm text-muted-foreground">Track and manage your solar investments</p>
           </div>
-          <Button asChild>
+          <Button asChild size="sm">
             <Link to="/dashboard/investor/assets">
-              <ArrowUpRight className="mr-2 h-4 w-4" />
-              New Investment
+              <ArrowUpRight className="mr-1 md:mr-2 h-4 w-4" />
+              <span className="hidden md:inline">New Investment</span>
+              <span className="md:hidden">Invest</span>
             </Link>
           </Button>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2 md:gap-4">
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Invested</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">₹{(totalInvested / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-muted-foreground mt-1">Across {investments?.length || 0} investments</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Total Invested</p>
+              <p className="text-lg md:text-2xl font-bold mt-0.5">₹{(totalInvested / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Across {investments?.length || 0} investments</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Expected Returns</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-primary">₹{(totalExpected / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-green-600 mt-1">+{((totalExpected / totalInvested - 1) * 100 || 0).toFixed(1)}% projected</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Expected</p>
+              <p className="text-lg md:text-2xl font-bold text-primary mt-0.5">₹{(totalExpected / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-green-600 mt-0.5 hidden md:block">+{((totalExpected / totalInvested - 1) * 100 || 0).toFixed(1)}%</p>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Actual Returns</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold text-green-600">₹{(totalActual / 100000).toFixed(2)}L</p>
-              <p className="text-xs text-muted-foreground mt-1">Credited to wallet</p>
+            <CardContent className="p-3 md:p-6 md:pt-6">
+              <p className="text-xs text-muted-foreground">Actual</p>
+              <p className="text-lg md:text-2xl font-bold text-green-600 mt-0.5">₹{(totalActual / 100000).toFixed(1)}L</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 hidden md:block">Credited to wallet</p>
             </CardContent>
           </Card>
         </div>
@@ -117,11 +112,11 @@ export default function InvestorInvestments() {
               const progress = (Number(investment.actual_returns) / Number(investment.expected_returns)) * 100;
               return (
                 <Card key={investment.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 md:p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-lg">
+                        <div className="flex items-center gap-2 md:gap-3 mb-1.5 md:mb-2 flex-wrap">
+                          <h3 className="font-semibold text-base md:text-lg">
                             {investment.solar_assets?.name || 'Solar Asset'}
                           </h3>
                           <Badge variant="outline" className={statusColors[investment.status]}>
@@ -132,22 +127,22 @@ export default function InvestorInvestments() {
                           {investment.solar_assets?.location || 'Location not specified'}
                         </p>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                           <div>
-                            <p className="text-xs text-muted-foreground">Investment Amount</p>
-                            <p className="font-semibold">₹{(Number(investment.amount) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Invested</p>
+                            <p className="text-sm md:text-base font-semibold">₹{(Number(investment.amount) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Expected Returns</p>
-                            <p className="font-semibold text-primary">₹{(Number(investment.expected_returns) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Expected</p>
+                            <p className="text-sm md:text-base font-semibold text-primary">₹{(Number(investment.expected_returns) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Actual Returns</p>
-                            <p className="font-semibold text-green-600">₹{(Number(investment.actual_returns) / 100000).toFixed(2)}L</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Actual</p>
+                            <p className="text-sm md:text-base font-semibold text-green-600">₹{(Number(investment.actual_returns) / 100000).toFixed(1)}L</p>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground">Maturity Date</p>
-                            <p className="font-semibold">{new Date(investment.maturity_date).toLocaleDateString()}</p>
+                            <p className="text-[10px] md:text-xs text-muted-foreground">Maturity</p>
+                            <p className="text-sm md:text-base font-semibold">{new Date(investment.maturity_date).toLocaleDateString()}</p>
                           </div>
                         </div>
 

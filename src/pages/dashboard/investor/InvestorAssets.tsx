@@ -59,15 +59,13 @@ export default function InvestorAssets() {
     <DashboardLayout role="investor">
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Solar Assets</h1>
-            <p className="text-muted-foreground">Browse and invest in solar projects</p>
-          </div>
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold">Solar Assets</h1>
+          <p className="text-sm text-muted-foreground">Browse and invest in solar projects</p>
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="space-y-3 md:space-y-0 md:flex md:flex-row md:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -77,9 +75,9 @@ export default function InvestorAssets() {
               className="pl-10"
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-32 md:w-40 shrink-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -91,7 +89,7 @@ export default function InvestorAssets() {
               </SelectContent>
             </Select>
             <Select value={riskFilter} onValueChange={setRiskFilter}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-28 md:w-32 shrink-0">
                 <SelectValue placeholder="Risk" />
               </SelectTrigger>
               <SelectContent>
@@ -104,46 +102,46 @@ export default function InvestorAssets() {
           </div>
         </div>
 
-        {/* Summary Stats */}
-        <div className="grid gap-4 md:grid-cols-4">
+        {/* Summary Stats - 2x2 on mobile */}
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Sun className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">Total Assets</span>
+                <Sun className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                <span className="text-xs md:text-sm text-muted-foreground">Total Assets</span>
               </div>
-              <p className="text-2xl font-bold mt-2">{assets?.length || 0}</p>
+              <p className="text-lg md:text-2xl font-bold mt-1">{assets?.length || 0}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                <span className="text-sm text-muted-foreground">Total Capacity</span>
+                <Zap className="h-4 w-4 md:h-5 md:w-5 text-yellow-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Total Capacity</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {assets?.reduce((sum, a) => sum + Number(a.capacity_kw), 0).toFixed(0)} kW
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                <span className="text-sm text-muted-foreground">Avg. IRR</span>
+                <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Avg. IRR</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {(assets?.reduce((sum, a) => sum + Number(a.expected_irr), 0) / (assets?.length || 1)).toFixed(1)}%
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="pt-6">
+            <CardContent className="p-3 md:pt-6 md:px-6">
               <div className="flex items-center gap-2">
-                <Filter className="h-5 w-5 text-blue-500" />
-                <span className="text-sm text-muted-foreground">Operational</span>
+                <Filter className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+                <span className="text-xs md:text-sm text-muted-foreground">Operational</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-lg md:text-2xl font-bold mt-1">
                 {assets?.filter(a => a.status === 'operational').length || 0}
               </p>
             </CardContent>
@@ -157,10 +155,10 @@ export default function InvestorAssets() {
               const fundingProgress = (Number(asset.funded_amount) / Number(asset.total_investment)) * 100;
               return (
                 <Card key={asset.id} className={`overflow-hidden opacity-0 animate-fade-in-up animate-stagger-${Math.min(idx + 1, 6)}`}>
-                  <div className="h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center shimmer-bg animate-shimmer">
-                    <Sun className="h-16 w-16 text-primary/30 animate-float" />
+                  <div className="h-24 md:h-32 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent flex items-center justify-center shimmer-bg animate-shimmer">
+                    <Sun className="h-12 w-12 md:h-16 md:w-16 text-primary/30 animate-float" />
                   </div>
-                  <CardContent className="p-4">
+                  <CardContent className="p-3 md:p-4">
                     <div className="flex items-start justify-between mb-2">
                       <h3 className="font-semibold">{asset.name}</h3>
                       <Badge variant="outline" className={statusColors[asset.status]}>
