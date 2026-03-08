@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -7,6 +7,25 @@ interface WithdrawParams {
   bankAccountNumber: string;
   bankIfsc: string;
   bankAccountHolder: string;
+}
+
+export function useWithdrawalRequests() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['withdrawal-requests', user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('withdrawal_requests')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
 }
 
 export function useWithdrawal() {
@@ -31,6 +50,7 @@ export function useWithdrawal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['withdrawal-requests'] });
     },
   });
 }
