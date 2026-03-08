@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useRazorpay } from '@/hooks/useRazorpay';
-import { useWithdrawal } from '@/hooks/useWithdrawal';
+import { useWithdrawal, useWithdrawalRequests } from '@/hooks/useWithdrawal';
 import { useReferrals } from '@/hooks/useReferrals';
 import { useAuth } from '@/contexts/AuthContext';
 import {
