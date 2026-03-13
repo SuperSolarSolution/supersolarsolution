@@ -15,7 +15,9 @@ import {
 } from '@/components/ui/select';
 import { useState } from 'react';
 import { InvestorInvestModal } from '@/components/dashboard/investor/InvestorInvestModal';
+import { SIPSetupModal } from '@/components/dashboard/investor/SIPSetupModal';
 import { SolarAsset } from '@/hooks/useSolarAssets';
+import { CalendarClock } from 'lucide-react';
 
 export default function InvestorAssets() {
   const { data: assets, isLoading } = useSolarAssets();
@@ -23,6 +25,7 @@ export default function InvestorAssets() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [selectedAsset, setSelectedAsset] = useState<SolarAsset | null>(null);
+  const [sipAsset, setSipAsset] = useState<SolarAsset | null>(null);
 
   const filteredAssets = assets?.filter(asset => {
     const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -203,13 +206,25 @@ export default function InvestorAssets() {
                       </p>
                     </div>
 
-                    <Button
-                      className="w-full"
-                      disabled={fundingProgress >= 100}
-                      onClick={() => setSelectedAsset(asset)}
-                    >
-                      {fundingProgress >= 100 ? 'Fully Funded' : 'Invest Now'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1"
+                        disabled={fundingProgress >= 100}
+                        onClick={() => setSelectedAsset(asset)}
+                      >
+                        {fundingProgress >= 100 ? 'Fully Funded' : 'Invest Now'}
+                      </Button>
+                      {fundingProgress < 100 && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setSipAsset(asset)}
+                          title="Start SIP"
+                        >
+                          <CalendarClock className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
@@ -229,6 +244,11 @@ export default function InvestorAssets() {
         isOpen={!!selectedAsset}
         onClose={() => setSelectedAsset(null)}
         asset={selectedAsset}
+      />
+      <SIPSetupModal
+        isOpen={!!sipAsset}
+        onClose={() => setSipAsset(null)}
+        asset={sipAsset}
       />
     </DashboardLayout>
   );
