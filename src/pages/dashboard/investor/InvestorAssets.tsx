@@ -206,13 +206,25 @@ export default function InvestorAssets() {
                       </p>
                     </div>
 
-                    <Button
-                      className="w-full"
-                      disabled={fundingProgress >= 100}
-                      onClick={() => setSelectedAsset(asset)}
-                    >
-                      {fundingProgress >= 100 ? 'Fully Funded' : 'Invest Now'}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1"
+                        disabled={fundingProgress >= 100}
+                        onClick={() => setSelectedAsset(asset)}
+                      >
+                        {fundingProgress >= 100 ? 'Fully Funded' : 'Invest Now'}
+                      </Button>
+                      {fundingProgress < 100 && (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setSipAsset(asset)}
+                          title="Start SIP"
+                        >
+                          <CalendarClock className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               );
