@@ -15,6 +15,7 @@ import InvestorAssets from "./pages/dashboard/investor/InvestorAssets";
 import InvestorReturns from "./pages/dashboard/investor/InvestorReturns";
 import InvestorWallet from "./pages/dashboard/investor/InvestorWallet";
 import InvestorSettings from "./pages/dashboard/investor/InvestorSettings";
+import InvestorSIPs from "./pages/dashboard/investor/InvestorSIPs";
 import CorporateDashboard from "./pages/dashboard/CorporateDashboard";
 import NBFCDashboard from "./pages/dashboard/NBFCDashboard";
 import ProjectDiscovery from "./pages/dashboard/nbfc/ProjectDiscovery";
