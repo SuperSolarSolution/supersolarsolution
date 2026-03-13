@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   BarChart3,
   Zap,
+  CalendarClock,
 } from 'lucide-react';
 
 interface DashboardSidebarProps {

@@ -245,6 +245,11 @@ export default function InvestorAssets() {
         onClose={() => setSelectedAsset(null)}
         asset={selectedAsset}
       />
+      <SIPSetupModal
+        isOpen={!!sipAsset}
+        onClose={() => setSipAsset(null)}
+        asset={sipAsset}
+      />
     </DashboardLayout>
   );
 }

@@ -98,6 +98,14 @@ const App = () => (
                             }
                         />
                         <Route
+                            path="/dashboard/investor/sips"
+                            element={
+                                <ProtectedRoute allowedRoles={['investor']}>
+                                    <InvestorSIPs />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
                             path="/dashboard/investor/settings"
                             element={
                                 <ProtectedRoute allowedRoles={['investor']}>
