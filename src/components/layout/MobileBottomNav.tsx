@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, TrendingUp, Sun, Wallet, Settings, Building2, Users, FileText, BarChart3, AlertTriangle, LucideIcon } from 'lucide-react';
+import { Home, TrendingUp, Sun, Wallet, Settings, Building2, Users, FileText, BarChart3, AlertTriangle, CalendarClock, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/types';
 
