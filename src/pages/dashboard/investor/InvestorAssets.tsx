@@ -15,7 +15,9 @@ import {
 } from '@/components/ui/select';
 import { useState } from 'react';
 import { InvestorInvestModal } from '@/components/dashboard/investor/InvestorInvestModal';
+import { SIPSetupModal } from '@/components/dashboard/investor/SIPSetupModal';
 import { SolarAsset } from '@/hooks/useSolarAssets';
+import { CalendarClock } from 'lucide-react';
 
 export default function InvestorAssets() {
   const { data: assets, isLoading } = useSolarAssets();
