@@ -25,6 +25,7 @@ export default function InvestorAssets() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
   const [selectedAsset, setSelectedAsset] = useState<SolarAsset | null>(null);
+  const [sipAsset, setSipAsset] = useState<SolarAsset | null>(null);
 
   const filteredAssets = assets?.filter(asset => {
     const matchesSearch = asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
