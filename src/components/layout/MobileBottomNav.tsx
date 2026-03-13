@@ -12,8 +12,8 @@ interface NavItem {
 const roleNavItems: Record<UserRole, NavItem[]> = {
   investor: [
     { label: 'Home', icon: Home, path: '/dashboard/investor' },
-    { label: 'Investments', icon: TrendingUp, path: '/dashboard/investor/investments' },
     { label: 'Assets', icon: Sun, path: '/dashboard/investor/assets' },
+    { label: 'SIPs', icon: CalendarClock, path: '/dashboard/investor/sips' },
     { label: 'Wallet', icon: Wallet, path: '/dashboard/investor/wallet' },
     { label: 'Settings', icon: Settings, path: '/dashboard/investor/settings' },
   ],
