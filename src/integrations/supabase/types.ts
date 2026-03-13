@@ -498,6 +498,94 @@ export type Database = {
           },
         ]
       }
+      sip_executions: {
+        Row: {
+          amount: number
+          executed_at: string
+          failure_reason: string | null
+          id: string
+          sip_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          executed_at?: string
+          failure_reason?: string | null
+          id?: string
+          sip_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          executed_at?: string
+          failure_reason?: string | null
+          id?: string
+          sip_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sip_executions_sip_id_fkey"
+            columns: ["sip_id"]
+            isOneToOne: false
+            referencedRelation: "sip_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sip_plans: {
+        Row: {
+          amount: number
+          asset_id: string
+          created_at: string
+          executions_count: number
+          id: string
+          investor_id: string
+          max_executions: number | null
+          next_execution_date: string
+          sip_date: number
+          status: Database["public"]["Enums"]["sip_status"]
+          total_invested: number
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          asset_id: string
+          created_at?: string
+          executions_count?: number
+          id?: string
+          investor_id: string
+          max_executions?: number | null
+          next_execution_date: string
+          sip_date: number
+          status?: Database["public"]["Enums"]["sip_status"]
+          total_invested?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          asset_id?: string
+          created_at?: string
+          executions_count?: number
+          id?: string
+          investor_id?: string
+          max_executions?: number | null
+          next_execution_date?: string
+          sip_date?: number
+          status?: Database["public"]["Enums"]["sip_status"]
+          total_invested?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sip_plans_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "solar_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       solar_assets: {
         Row: {
           annual_degradation: number
@@ -691,6 +779,7 @@ export type Database = {
       milestone_status: "pending" | "completed" | "delayed"
       referral_status: "registered" | "pending" | "successful"
       risk_score: "low" | "medium" | "high"
+      sip_status: "active" | "paused" | "completed" | "cancelled"
       transaction_status: "pending" | "completed" | "failed"
       transaction_type:
         | "investment"
@@ -845,6 +934,7 @@ export const Constants = {
       milestone_status: ["pending", "completed", "delayed"],
       referral_status: ["registered", "pending", "successful"],
       risk_score: ["low", "medium", "high"],
+      sip_status: ["active", "paused", "completed", "cancelled"],
       transaction_status: ["pending", "completed", "failed"],
       transaction_type: [
         "investment",
