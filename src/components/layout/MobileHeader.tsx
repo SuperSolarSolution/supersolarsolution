@@ -1,4 +1,5 @@
-import { Sun, Bell, Menu } from 'lucide-react';
+import { Sun, Menu } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
