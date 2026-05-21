@@ -12,6 +12,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, role }: DashboardLayoutProps) {
+  useNotificationsRealtime();
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}
