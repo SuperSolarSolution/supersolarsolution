@@ -4,6 +4,7 @@ import { DashboardSidebar } from './DashboardSidebar';
 import { MobileHeader } from './MobileHeader';
 import { MobileBottomNav } from './MobileBottomNav';
 import { UserRole } from '@/types';
+import { useNotificationsRealtime } from '@/hooks/useNotifications';
 
 interface DashboardLayoutProps {
   children: ReactNode;
