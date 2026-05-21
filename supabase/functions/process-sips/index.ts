@@ -85,6 +85,15 @@ Deno.serve(async (req) => {
           status: 'success',
         });
 
+        await supabase.from('notifications').insert({
+          user_id: sip.investor_id,
+          type: 'sip_executed',
+          title: 'SIP Executed',
+          message: `Your SIP of ₹${sip.amount} was invested successfully.`,
+          link: '/dashboard/investor/sips',
+          metadata: { sip_id: sip.id, amount: sip.amount },
+        });
+
         // Update SIP plan
         const newCount = (sip.executions_count || 0) + 1;
         const newTotal = Number(sip.total_invested) + Number(sip.amount);
