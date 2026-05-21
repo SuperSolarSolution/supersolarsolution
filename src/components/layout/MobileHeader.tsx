@@ -1,4 +1,5 @@
-import { Sun, Bell, Menu } from 'lucide-react';
+import { Sun, Menu } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -48,12 +49,7 @@ export function MobileHeader({ role }: MobileHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="relative h-9 w-9">
-            <Bell className="h-5 w-5" />
-            <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[9px] font-medium text-destructive-foreground flex items-center justify-center animate-pulse-soft">
-              3
-            </span>
-          </Button>
+          <NotificationBell variant="mobile" />
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center ring-2 ring-primary/20">
             <span className="text-xs font-semibold text-primary">
               {profile?.full_name?.charAt(0) || 'U'}

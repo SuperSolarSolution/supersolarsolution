@@ -4,6 +4,7 @@ import { DashboardSidebar } from './DashboardSidebar';
 import { MobileHeader } from './MobileHeader';
 import { MobileBottomNav } from './MobileBottomNav';
 import { UserRole } from '@/types';
+import { useNotificationsRealtime } from '@/hooks/useNotifications';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -11,6 +12,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, role }: DashboardLayoutProps) {
+  useNotificationsRealtime();
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Layout */}

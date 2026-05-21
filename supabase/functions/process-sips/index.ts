@@ -47,6 +47,15 @@ Deno.serve(async (req) => {
             failure_reason: 'Insufficient wallet balance',
           });
 
+          await supabase.from('notifications').insert({
+            user_id: sip.investor_id,
+            type: 'sip_failed',
+            title: 'SIP Skipped',
+            message: `Your SIP of ₹${sip.amount} was skipped due to insufficient wallet balance.`,
+            link: '/dashboard/investor/sips',
+            metadata: { sip_id: sip.id, amount: sip.amount },
+          });
+
           // Advance next_execution_date anyway
           const nextDate = advanceMonth(sip.next_execution_date, sip.sip_date);
           await supabase
@@ -74,6 +83,15 @@ Deno.serve(async (req) => {
           sip_id: sip.id,
           amount: sip.amount,
           status: 'success',
+        });
+
+        await supabase.from('notifications').insert({
+          user_id: sip.investor_id,
+          type: 'sip_executed',
+          title: 'SIP Executed',
+          message: `Your SIP of ₹${sip.amount} was invested successfully.`,
+          link: '/dashboard/investor/sips',
+          metadata: { sip_id: sip.id, amount: sip.amount },
         });
 
         // Update SIP plan
