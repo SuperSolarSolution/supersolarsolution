@@ -274,6 +274,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          link: string | null
+          message: string
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          message: string
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          message?: string
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -730,6 +766,17 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string }
         Returns: Json
       }
+      create_notification: {
+        Args: {
+          p_link?: string
+          p_message: string
+          p_metadata?: Json
+          p_title: string
+          p_type: Database["public"]["Enums"]["notification_type"]
+          p_user_id: string
+        }
+        Returns: string
+      }
       generate_unique_referral_code: { Args: never; Returns: string }
       get_user_role: {
         Args: { _user_id: string }
@@ -777,6 +824,18 @@ export type Database = {
       investment_status: "committed" | "deployed" | "returned"
       kyc_status: "pending" | "approved" | "rejected"
       milestone_status: "pending" | "completed" | "delayed"
+      notification_type:
+        | "return_credited"
+        | "withdrawal_processed"
+        | "withdrawal_rejected"
+        | "new_asset"
+        | "kyc_approved"
+        | "kyc_rejected"
+        | "sip_executed"
+        | "sip_failed"
+        | "investment_confirmed"
+        | "referral_bonus"
+        | "general"
       referral_status: "registered" | "pending" | "successful"
       risk_score: "low" | "medium" | "high"
       sip_status: "active" | "paused" | "completed" | "cancelled"
@@ -932,6 +991,19 @@ export const Constants = {
       investment_status: ["committed", "deployed", "returned"],
       kyc_status: ["pending", "approved", "rejected"],
       milestone_status: ["pending", "completed", "delayed"],
+      notification_type: [
+        "return_credited",
+        "withdrawal_processed",
+        "withdrawal_rejected",
+        "new_asset",
+        "kyc_approved",
+        "kyc_rejected",
+        "sip_executed",
+        "sip_failed",
+        "investment_confirmed",
+        "referral_bonus",
+        "general",
+      ],
       referral_status: ["registered", "pending", "successful"],
       risk_score: ["low", "medium", "high"],
       sip_status: ["active", "paused", "completed", "cancelled"],
