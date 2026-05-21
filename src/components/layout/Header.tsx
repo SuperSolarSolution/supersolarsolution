@@ -1,4 +1,5 @@
-import { Sun, Bell, User, ChevronDown } from 'lucide-react';
+import { Sun, User, ChevronDown } from 'lucide-react';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
