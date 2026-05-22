@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCreateSIP } from '@/hooks/useSIPPlans';
 import { SolarAsset } from '@/hooks/useSolarAssets';
+import { getOrdinalSuffix } from '@/lib/utils';
 import { 
   CalendarClock, 
   IndianRupee, 
@@ -456,8 +457,3 @@ export function SIPSetupModal({ isOpen, onClose, asset }: SIPSetupModalProps) {
   );
 }
 
-function getOrdinalSuffix(n: number) {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
-}

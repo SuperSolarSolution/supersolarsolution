@@ -14,6 +14,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { getOrdinalSuffix } from '@/lib/utils';
 
 const statusConfig: Record<string, { label: string; class: string }> = {
   active: { label: 'Active', class: 'bg-green-500/10 text-green-600 border-green-500/20' },
@@ -228,8 +229,3 @@ function SIPCard({ sip, onUpdateStatus, isUpdating }: {
   );
 }
 
-function getOrdinalSuffix(n: number) {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
-}
