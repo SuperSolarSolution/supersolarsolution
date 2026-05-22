@@ -85,7 +85,7 @@ export function useCreateSIP() {
     }) => {
       // Calculate next execution date
       const now = new Date();
-      let nextDate = new Date(now.getFullYear(), now.getMonth(), params.sip_date);
+      const nextDate = new Date(now.getFullYear(), now.getMonth(), params.sip_date);
       if (nextDate <= now) {
         nextDate.setMonth(nextDate.getMonth() + 1);
       }

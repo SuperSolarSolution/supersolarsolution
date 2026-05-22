@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { formatCurrency } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,7 +31,7 @@ function calculateScenario(
   const adjustedIRR = baseIRR * modifier;
   const annualReturn = investment * (adjustedIRR / 100);
 
-  let cashFlows: { year: number; inflow: number; cumulative: number }[] = [];
+  const cashFlows: { year: number; inflow: number; cumulative: number }[] = [];
   let cumulative = -investment;
   let paybackYear = tenure;
 
@@ -95,16 +96,6 @@ export function ROICalculator() {
     Expected: results.expected.cashFlows[idx].inflow,
     Aggressive: results.aggressive.cashFlows[idx].inflow,
   }));
-
-  function formatCurrency(amount: number): string {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(2)} Cr`;
-    }
-    if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(2)} L`;
-    }
-    return `₹${amount.toLocaleString('en-IN')}`;
-  }
 
   return (
     <div className="space-y-6">
