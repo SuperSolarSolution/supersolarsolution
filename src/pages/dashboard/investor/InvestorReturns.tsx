@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,9 +23,25 @@ export default function InvestorReturns() {
 
   const isLoading = investmentsLoading || transactionsLoading;
 
-  const totalActualReturns = investments?.reduce((sum, inv) => sum + Number(inv.actual_returns), 0) || 0;
-  const totalExpectedReturns = investments?.reduce((sum, inv) => sum + Number(inv.expected_returns), 0) || 0;
-  const totalInvested = investments?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
+  const { totalActualReturns, totalExpectedReturns, totalInvested } = useMemo(() => {
+    if (!investments) return { totalActualReturns: 0, totalExpectedReturns: 0, totalInvested: 0 };
+
+    let actual = 0;
+    let expected = 0;
+    let invested = 0;
+
+    for (const inv of investments) {
+      actual += Number(inv.actual_returns) || 0;
+      expected += Number(inv.expected_returns) || 0;
+      invested += Number(inv.amount) || 0;
+    }
+
+    return {
+      totalActualReturns: actual,
+      totalExpectedReturns: expected,
+      totalInvested: invested
+    };
+  }, [investments]);
 
   // Filter return transactions
   const returnTransactions = transactions?.filter(tx => tx.type === 'return') || [];
