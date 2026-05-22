@@ -42,6 +42,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getOrdinalSuffix } from '@/lib/utils';
 
 interface SIPSetupModalProps {
   isOpen: boolean;
@@ -454,10 +455,4 @@ export function SIPSetupModal({ isOpen, onClose, asset }: SIPSetupModalProps) {
       </Dialog>
     </>
   );
-}
-
-function getOrdinalSuffix(n: number) {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
 }
