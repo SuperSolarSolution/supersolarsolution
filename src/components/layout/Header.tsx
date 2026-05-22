@@ -35,6 +35,9 @@ export function Header({ showAuth = true }: HeaderProps) {
             <Link to="/calculator" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               ROI Calculator
             </Link>
+            <Link to="/blog" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Blog
+            </Link>
             <Link to="/assets" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Solar Assets
             </Link>

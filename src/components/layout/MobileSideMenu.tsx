@@ -2,7 +2,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, TrendingUp, Sun, Wallet, Settings, Building2, Users, FileText, 
   BarChart3, AlertTriangle, LogOut, HelpCircle,
-  ChevronRight, Banknote, Shield
+  ChevronRight, Banknote, Shield, ArrowLeftRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/types';
@@ -22,6 +22,7 @@ const roleMenuItems: Record<UserRole, MenuItem[]> = {
     { label: 'Dashboard', icon: Home, path: '/dashboard/investor' },
     { label: 'My Investments', icon: TrendingUp, path: '/dashboard/investor/investments' },
     { label: 'Solar Assets', icon: Sun, path: '/dashboard/investor/assets' },
+    { label: 'Secondary Market', icon: ArrowLeftRight, path: '/dashboard/investor/p2p' },
     { label: 'Returns & Payouts', icon: Banknote, path: '/dashboard/investor/returns' },
     { label: 'Wallet', icon: Wallet, path: '/dashboard/investor/wallet' },
     { label: 'Settings', icon: Settings, path: '/dashboard/investor/settings' },

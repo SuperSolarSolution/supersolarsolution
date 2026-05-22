@@ -3,12 +3,15 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Calculator from "./pages/Calculator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import InvestorDashboard from "./pages/dashboard/InvestorDashboard";
 import InvestorInvestments from "./pages/dashboard/investor/InvestorInvestments";
 import InvestorAssets from "./pages/dashboard/investor/InvestorAssets";
@@ -16,6 +19,7 @@ import InvestorReturns from "./pages/dashboard/investor/InvestorReturns";
 import InvestorWallet from "./pages/dashboard/investor/InvestorWallet";
 import InvestorSettings from "./pages/dashboard/investor/InvestorSettings";
 import InvestorSIPs from "./pages/dashboard/investor/InvestorSIPs";
+import InvestorP2P from "./pages/dashboard/investor/InvestorP2P";
 import CorporateDashboard from "./pages/dashboard/CorporateDashboard";
 import NBFCDashboard from "./pages/dashboard/NBFCDashboard";
 import ProjectDiscovery from "./pages/dashboard/nbfc/ProjectDiscovery";
@@ -44,6 +48,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
+    <HelmetProvider>
     <QueryClientProvider client={queryClient}>
         <TooltipProvider>
             <Toaster />
@@ -53,6 +58,8 @@ const App = () => (
                     <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="/calculator" element={<Calculator />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:slug" element={<BlogPost />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
 
@@ -110,6 +117,14 @@ const App = () => (
                             element={
                                 <ProtectedRoute allowedRoles={['investor']}>
                                     <InvestorSettings />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/investor/p2p"
+                            element={
+                                <ProtectedRoute allowedRoles={['investor']}>
+                                    <InvestorP2P />
                                 </ProtectedRoute>
                             }
                         />
@@ -183,6 +198,7 @@ const App = () => (
             </BrowserRouter>
         </TooltipProvider>
     </QueryClientProvider>
+    </HelmetProvider>
 );
 
 export default App;

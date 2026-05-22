@@ -10,6 +10,12 @@ export interface Profile {
   kyc_status: 'pending' | 'approved' | 'rejected';
   avatar_url: string | null;
   wallet_balance: number;
+  pan_number: string | null;
+  aadhaar_number: string | null;
+  upi_id: string | null;
+  bank_verified: boolean;
+  kyc_submitted_at: string | null;
+  kyc_approved_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -65,7 +71,10 @@ export function useUpdateKYCStatus() {
     mutationFn: async ({ userId, status }: { userId: string; status: 'pending' | 'approved' | 'rejected' }) => {
       const { data, error } = await supabase
         .from('profiles')
-        .update({ kyc_status: status })
+        .update({ 
+          kyc_status: status,
+          kyc_approved_at: status === 'approved' ? new Date().toISOString() : null
+        })
         .eq('id', userId)
         .select()
         .single();

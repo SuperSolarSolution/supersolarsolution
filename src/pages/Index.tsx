@@ -236,6 +236,60 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section className="py-20 bg-muted/20">
+        <div className="container">
+          <div className="mx-auto max-w-2xl text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">From Our Knowledge Hub</h2>
+            <p className="text-muted-foreground">
+              Expert insights on solar investment, financing, and sustainability in India
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3 mb-10">
+            {[
+              {
+                title: "Solar Energy Investment in India 2024: A Complete Guide",
+                category: "Investment Guide",
+                slug: "solar-energy-investment-india-2024-complete-guide",
+                readingTime: 12,
+              },
+              {
+                title: "What is a Power Purchase Agreement (PPA)? Explained",
+                category: "Corporate Solar",
+                slug: "what-is-ppa-power-purchase-agreement-solar-india",
+                readingTime: 9,
+              },
+              {
+                title: "Solar SIP: Invest in Renewable Energy Monthly",
+                category: "Investment Guide",
+                slug: "solar-sip-systematic-investment-plan-renewable-energy",
+                readingTime: 8,
+              },
+            ].map((post) => (
+              <Link key={post.slug} to={`/blog/${post.slug}`} className="group">
+                <div className="rounded-xl border border-border bg-card p-6 hover:border-primary/40 hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                  <span className="text-xs font-medium text-primary bg-primary/10 rounded-full px-3 py-1 self-start mb-4">{post.category}</span>
+                  <h3 className="font-semibold text-base mb-4 group-hover:text-primary transition-colors leading-snug flex-1">
+                    {post.title}
+                  </h3>
+                  <span className="inline-flex items-center text-sm font-medium text-primary group-hover:gap-2 gap-1 transition-all">
+                    Read Article <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <div className="text-center">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+            >
+              View All Articles <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-primary py-16">
         <div className="container">
@@ -272,6 +326,12 @@ export default function Index() {
               </div>
               <span className="font-semibold">S³ – Super Solar Solutions</span>
             </div>
+            <nav className="flex gap-6 text-sm text-muted-foreground">
+              <Link to="/blog" className="hover:text-foreground transition-colors">Blog</Link>
+              <Link to="/calculator" className="hover:text-foreground transition-colors">ROI Calculator</Link>
+              <Link to="/register" className="hover:text-foreground transition-colors">Get Started</Link>
+              <Link to="/login" className="hover:text-foreground transition-colors">Sign In</Link>
+            </nav>
             <p className="text-sm text-muted-foreground">
               © 2024 S³ Solar. All rights reserved. Regulated financial infrastructure.
             </p>

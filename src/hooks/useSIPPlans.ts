@@ -80,6 +80,8 @@ export function useCreateSIP() {
       amount: number;
       sip_date: number;
       max_executions?: number | null;
+      payment_method?: 'wallet' | 'mandate';
+      mandate_id?: string | null;
     }) => {
       // Calculate next execution date
       const now = new Date();
@@ -98,6 +100,8 @@ export function useCreateSIP() {
           sip_date: params.sip_date,
           next_execution_date: nextExecDate,
           max_executions: params.max_executions || null,
+          payment_method: params.payment_method || 'wallet',
+          mandate_id: params.mandate_id || null,
         } as any)
         .select()
         .single();

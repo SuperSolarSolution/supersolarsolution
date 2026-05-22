@@ -17,6 +17,12 @@ interface Profile {
   bank_account_number: string | null;
   bank_ifsc: string | null;
   bank_account_holder: string | null;
+  pan_number?: string | null;
+  aadhaar_number?: string | null;
+  upi_id?: string | null;
+  bank_verified?: boolean;
+  kyc_submitted_at?: string | null;
+  kyc_approved_at?: string | null;
 }
 
 interface AuthContextType {
@@ -28,6 +34,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string, role: AppRole, referralCode?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null; role?: AppRole | null }>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -151,6 +158,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRole(null);
   };
 
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchUserData(user.id);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -162,6 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUp,
         signIn,
         signOut,
+        refreshProfile,
       }}
     >
       {children}

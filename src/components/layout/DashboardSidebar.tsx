@@ -19,6 +19,7 @@ import {
   BarChart3,
   Zap,
   CalendarClock,
+  ArrowLeftRight,
 } from 'lucide-react';
 
 interface DashboardSidebarProps {
@@ -31,6 +32,7 @@ const menuItems: Record<UserRole, { label: string; icon: React.ComponentType<any
     { label: 'My Investments', icon: PieChart, path: '/dashboard/investor/investments' },
     { label: 'Solar Assets', icon: Sun, path: '/dashboard/investor/assets' },
     { label: 'Solar SIPs', icon: CalendarClock, path: '/dashboard/investor/sips' },
+    { label: 'Secondary Market', icon: ArrowLeftRight, path: '/dashboard/investor/p2p' },
     { label: 'Returns & Payouts', icon: TrendingUp, path: '/dashboard/investor/returns' },
     { label: 'Wallet', icon: Wallet, path: '/dashboard/investor/wallet' },
     { label: 'Settings', icon: Settings, path: '/dashboard/investor/settings' },

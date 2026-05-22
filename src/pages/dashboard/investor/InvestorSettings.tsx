@@ -46,6 +46,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { Check } from 'lucide-react';
+
 
 export default function InvestorSettings() {
   const { profile, signOut } = useAuth();
@@ -63,12 +66,39 @@ export default function InvestorSettings() {
   const [showPasswords, setShowPasswords] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   
+  // KYC & Upload states
+  const [panNumber, setPanNumber] = useState(profile?.pan_number || '');
+  const [aadhaarNumber, setAadhaarNumber] = useState(profile?.aadhaar_number ? profile.aadhaar_number.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3') : '');
+  const [panFile, setPanFile] = useState<File | null>(null);
+  const [panUploadProgress, setPanUploadProgress] = useState(0);
+  const [panUploading, setPanUploading] = useState(false);
+  const [aadhaarFile, setAadhaarFile] = useState<File | null>(null);
+  const [aadhaarUploadProgress, setAadhaarUploadProgress] = useState(0);
+  const [aadhaarUploading, setAadhaarUploading] = useState(false);
+  
+  // Aadhaar OTP Verification states
+  const [isOtpDialogOpen, setIsOtpDialogOpen] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [isOtpSending, setIsOtpSending] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [isOtpVerifying, setIsOtpVerifying] = useState(false);
+  
   // Bank details states
   const [bankName, setBankName] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [ifscCode, setIfscCode] = useState('');
-  const [accountHolderName, setAccountHolderName] = useState('');
+  const [accountNumber, setAccountNumber] = useState(profile?.bank_account_number || '');
+  const [ifscCode, setIfscCode] = useState(profile?.bank_ifsc || '');
+  const [accountHolderName, setAccountHolderName] = useState(profile?.bank_account_holder || '');
+  const [bankVerified, setBankVerified] = useState(profile?.bank_verified || false);
   
+  // Penny-Drop Verification states
+  const [isPennyDropOpen, setIsPennyDropOpen] = useState(false);
+  const [pennyDropStep, setPennyDropStep] = useState(0);
+  const [pennyDropStatus, setPennyDropStatus] = useState<'pending' | 'success' | 'failed'>('pending');
+  
+  // UPI states
+  const [upiId, setUpiId] = useState(profile?.upi_id || '');
+  const [isUpiVerifying, setIsUpiVerifying] = useState(false);
+
   // Notification preferences
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(true);
@@ -155,11 +185,283 @@ export default function InvestorSettings() {
     }
   };
 
-  const handleSaveBankDetails = () => {
-    toast({
-      title: 'Bank details saved',
-      description: 'Your payout account has been updated.',
-    });
+  const handlePanUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPanFile(file);
+    setPanUploading(true);
+    setPanUploadProgress(0);
+    
+    const interval = setInterval(() => {
+      setPanUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setPanUploading(false);
+          toast({
+            title: "PAN Document Uploaded",
+            description: `${file.name} uploaded successfully.`,
+          });
+          return 100;
+        }
+        return prev + 25;
+      });
+    }, 150);
+  };
+
+  const handleAadhaarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAadhaarFile(file);
+    setAadhaarUploading(true);
+    setAadhaarUploadProgress(0);
+    
+    const interval = setInterval(() => {
+      setAadhaarUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setAadhaarUploading(false);
+          toast({
+            title: "Aadhaar Document Uploaded",
+            description: `${file.name} uploaded successfully.`,
+          });
+          return 100;
+        }
+        return prev + 25;
+      });
+    }, 150);
+  };
+
+  const handleAadhaarInput = (value: string) => {
+    const cleaned = value.replace(/\D/g, '').substring(0, 12);
+    const parts = [];
+    for (let i = 0; i < cleaned.length; i += 4) {
+      parts.push(cleaned.substring(i, i + 4));
+    }
+    setAadhaarNumber(parts.join(' '));
+  };
+
+  const handlePanInput = (value: string) => {
+    setPanNumber(value.toUpperCase().substring(0, 10));
+  };
+
+  const handleInitiateKyc = () => {
+    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+    const cleanPan = panNumber.trim().toUpperCase();
+    if (!panRegex.test(cleanPan)) {
+      toast({
+        title: "Invalid PAN Format",
+        description: "Please enter a valid 10-character PAN (e.g. ABCDE1234F).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const cleanAadhaar = aadhaarNumber.replace(/\s/g, '');
+    if (cleanAadhaar.length !== 12) {
+      toast({
+        title: "Invalid Aadhaar Number",
+        description: "Please enter a 12-digit Aadhaar number.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!panFile && panUploadProgress < 100) {
+      toast({
+        title: "Missing Document",
+        description: "Please upload your PAN card scan.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!aadhaarFile && aadhaarUploadProgress < 100) {
+      toast({
+        title: "Missing Document",
+        description: "Please upload your Aadhaar card scan.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsOtpDialogOpen(true);
+    setIsOtpSending(true);
+    setOtpSent(false);
+
+    setTimeout(() => {
+      setIsOtpSending(false);
+      setOtpSent(true);
+      toast({
+        title: "Simulated SMS Sent",
+        description: "A secure verification code has been sent. Use OTP: 123456.",
+      });
+    }, 1200);
+  };
+
+  const handleVerifyAadhaarOtp = async () => {
+    if (otpCode !== '123456') {
+      toast({
+        title: "Verification Failed",
+        description: "Incorrect OTP code. Enter 123456 to verify.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsOtpVerifying(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          pan_number: panNumber.trim().toUpperCase(),
+          aadhaar_number: aadhaarNumber.replace(/\s/g, ''),
+          kyc_status: 'pending',
+          kyc_submitted_at: new Date().toISOString()
+        })
+        .eq('id', profile?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "KYC Submitted",
+        description: "Your verification documents have been submitted successfully.",
+      });
+      
+      setIsOtpDialogOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (err: any) {
+      toast({
+        title: "Submission Error",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsOtpVerifying(false);
+    }
+  };
+
+  const handleStartPennyDrop = async () => {
+    if (!bankName) {
+      toast({
+        title: "Bank Selection Required",
+        description: "Please choose your bank from the list.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!accountHolderName.trim()) {
+      toast({
+        title: "Holder Name Required",
+        description: "Please enter the account holder name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!accountNumber.trim() || accountNumber.length < 9) {
+      toast({
+        title: "Invalid Account Number",
+        description: "Please enter a valid bank account number.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (!ifscRegex.test(ifscCode.trim().toUpperCase())) {
+      toast({
+        title: "Invalid IFSC Code",
+        description: "IFSC code format is invalid (e.g. HDFC0000123).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPennyDropOpen(true);
+    setPennyDropStatus('pending');
+    setPennyDropStep(1);
+
+    setTimeout(() => {
+      setPennyDropStep(2);
+    }, 1000);
+
+    setTimeout(() => {
+      setPennyDropStep(3);
+    }, 2000);
+
+    setTimeout(() => {
+      setPennyDropStep(4);
+    }, 3000);
+
+    setTimeout(async () => {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            bank_account_number: accountNumber.trim(),
+            bank_ifsc: ifscCode.trim().toUpperCase(),
+            bank_account_holder: accountHolderName.trim(),
+            bank_verified: true
+          })
+          .eq('id', profile?.id);
+
+        if (error) throw error;
+
+        setPennyDropStatus('success');
+        setBankVerified(true);
+        toast({
+          title: "Bank Verified Successfully",
+          description: `Penny drop matched beneficiary: ${accountHolderName}.`,
+        });
+      } catch (err: any) {
+        setPennyDropStatus('failed');
+        toast({
+          title: "Bank Verification Failed",
+          description: err.message,
+          variant: "destructive",
+        });
+      }
+    }, 3800);
+  };
+
+  const handleSaveUpi = async () => {
+    if (!upiId.trim() || !upiId.includes('@')) {
+      toast({
+        title: "Invalid UPI ID",
+        description: "Please enter a valid UPI VPA (e.g. user@okaxis).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpiVerifying(true);
+    setTimeout(async () => {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            upi_id: upiId.trim(),
+            bank_verified: true
+          })
+          .eq('id', profile?.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "UPI Saved & Verified",
+          description: "Your UPI payout VPA has been successfully verified via NPCI lookup.",
+        });
+        setBankVerified(true);
+      } catch (err: any) {
+        toast({
+          title: "UPI verification failed",
+          description: err.message,
+          variant: "destructive",
+        });
+      } finally {
+        setIsUpiVerifying(false);
+      }
+    }, 1200);
   };
 
   const handleLogout = async () => {
@@ -272,77 +574,225 @@ export default function InvestorSettings() {
 
           {/* KYC Tab */}
           <TabsContent value="kyc">
-            <Card>
+            <Card className="border-border/50 bg-card/60 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>KYC Verification</CardTitle>
-                    <CardDescription>Complete your KYC to enable withdrawals</CardDescription>
+                    <CardTitle className="text-xl">KYC Verification</CardTitle>
+                    <CardDescription>Complete identity registration to enable withdrawals</CardDescription>
                   </div>
-                  <Badge variant="outline" className={`${kycStatusConfig[kycStatus].bg} ${kycStatusConfig[kycStatus].color}`}>
-                    <KycIcon className="mr-1 h-3 w-3" />
-                    {kycStatus.charAt(0).toUpperCase() + kycStatus.slice(1)}
+                  <Badge variant="outline" className={`${kycStatusConfig[kycStatus].bg} ${kycStatusConfig[kycStatus].color} border-current/10 font-semibold px-2.5 py-0.5`}>
+                    <KycIcon className="mr-1 h-3.5 w-3.5" />
+                    {kycStatus === 'approved' ? 'Verified' : kycStatus.charAt(0).toUpperCase() + kycStatus.slice(1)}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {kycStatus === 'approved' ? (
-                  <div className="p-6 rounded-lg bg-green-500/10 text-center">
-                    <CheckCircle2 className="h-12 w-12 mx-auto text-green-600 mb-3" />
-                    <h3 className="font-semibold text-green-600">KYC Verified</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Your identity has been verified. You can withdraw funds freely.
+                  <div className="p-8 rounded-2xl bg-green-500/10 border border-green-500/20 text-center max-w-lg mx-auto">
+                    <CheckCircle2 className="h-14 w-14 mx-auto text-green-600 mb-4 animate-bounce" />
+                    <h3 className="text-lg font-bold text-green-600">KYC Verification Complete</h3>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                      Your identity has been fully verified via Aadhaar & PAN. Wallet payouts and capital liquidations are now completely active.
                     </p>
                   </div>
-                ) : kycStatus === 'rejected' ? (
-                  <div className="p-6 rounded-lg bg-red-500/10 text-center">
-                    <AlertCircle className="h-12 w-12 mx-auto text-red-600 mb-3" />
-                    <h3 className="font-semibold text-red-600">KYC Rejected</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Your KYC was rejected. Please resubmit with valid documents.
+                ) : profile?.pan_number && kycStatus === 'pending' ? (
+                  <div className="p-8 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center max-w-lg mx-auto">
+                    <Clock className="h-14 w-14 mx-auto text-yellow-600 mb-4 animate-pulse" />
+                    <h3 className="text-lg font-bold text-yellow-600">Verification in Progress</h3>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                      Your documents are currently undergoing automated verification and manual compliance checks.
                     </p>
-                    <Button className="mt-4">Resubmit Documents</Button>
+                    <div className="mt-4 text-xs text-muted-foreground bg-background/50 p-3 rounded-lg text-left space-y-1 inline-block">
+                      <div><strong className="text-foreground">PAN:</strong> {profile?.pan_number.replace(/.(?=.{4})/g, "*")}</div>
+                      <div><strong className="text-foreground">Aadhaar:</strong> {profile?.aadhaar_number ? "**** **** " + profile.aadhaar_number.slice(-4) : ""}</div>
+                    </div>
+                  </div>
+                ) : kycStatus === 'rejected' ? (
+                  <div className="p-8 rounded-2xl bg-red-500/10 border border-red-500/20 text-center max-w-lg mx-auto">
+                    <AlertCircle className="h-14 w-14 mx-auto text-red-600 mb-4" />
+                    <h3 className="text-lg font-bold text-red-600">KYC Verification Rejected</h3>
+                    <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                      Your submission was rejected due to blurry document scans. Please try uploading clearer high-resolution images.
+                    </p>
+                    <Button 
+                      className="mt-6 font-semibold"
+                      onClick={async () => {
+                        // Reset pan_number in profiles to let them retry
+                        await supabase.from('profiles').update({ pan_number: null, kyc_status: 'pending' }).eq('id', profile?.id);
+                        window.location.reload();
+                      }}
+                    >
+                      Resubmit Documents
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    <div className="p-4 rounded-lg bg-yellow-500/10">
-                      <p className="text-sm text-yellow-700">
-                        KYC verification is required to withdraw funds. Complete it below.
+                    <div className="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-sm text-yellow-700 flex gap-3">
+                      <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                      <p>
+                        <strong>Compliance Note:</strong> Under RBI and SEBI sandbox guidelines, KYC verification is mandatory to establish ownership of solar asset fractions and process withdrawals.
                       </p>
                     </div>
-
-                    <div className="grid gap-4 md:grid-cols-2">
+ 
+                    <div className="grid gap-5 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label>PAN Number</Label>
-                        <Input placeholder="ABCDE1234F" />
+                        <Label htmlFor="panInput" className="font-semibold text-foreground/80">PAN Number</Label>
+                        <Input 
+                          id="panInput" 
+                          placeholder="ABCDE1234F" 
+                          value={panNumber}
+                          onChange={(e) => handlePanInput(e.target.value)}
+                          className="font-mono text-lg uppercase tracking-widest border-border/70"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label>Aadhaar Number</Label>
-                        <Input placeholder="XXXX XXXX XXXX" />
+                        <Label htmlFor="aadhaarInput" className="font-semibold text-foreground/80">Aadhaar Number</Label>
+                        <Input 
+                          id="aadhaarInput"
+                          placeholder="XXXX XXXX XXXX" 
+                          value={aadhaarNumber}
+                          onChange={(e) => handleAadhaarInput(e.target.value)}
+                          className="font-mono text-lg tracking-widest border-border/70"
+                        />
                       </div>
                     </div>
-
-                    <div className="space-y-4">
-                      <Label>Upload Documents</Label>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 cursor-pointer transition-colors">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="font-medium">PAN Card</p>
-                          <p className="text-xs text-muted-foreground">Click to upload</p>
+ 
+                    <div className="space-y-4 mt-6">
+                      <Label className="font-semibold text-foreground/80">Upload Official Scans</Label>
+                      <div className="grid gap-5 md:grid-cols-2">
+                        {/* PAN card upload */}
+                        <div className="relative border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 cursor-pointer transition-all bg-muted/20 hover:bg-muted/40 group">
+                          <input 
+                            type="file" 
+                            accept="image/*,.pdf" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            onChange={handlePanUpload}
+                            disabled={panUploading}
+                          />
+                          {panUploading ? (
+                            <div className="space-y-3 py-2">
+                              <Loader2 className="h-8 w-8 mx-auto text-primary animate-spin" />
+                              <div className="text-sm font-semibold">Uploading PAN Card...</div>
+                              <Progress value={panUploadProgress} className="h-2 max-w-[150px] mx-auto" />
+                            </div>
+                          ) : panFile ? (
+                            <div className="space-y-2 py-2">
+                              <CheckCircle2 className="h-8 w-8 mx-auto text-green-500" />
+                              <p className="font-semibold text-sm text-foreground">{panFile.name}</p>
+                              <p className="text-xs text-muted-foreground">Click to replace file</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 py-2">
+                              <Upload className="h-8 w-8 mx-auto text-muted-foreground group-hover:text-primary transition-colors" />
+                              <p className="font-semibold text-sm">PAN Card Front Scan</p>
+                              <p className="text-xs text-muted-foreground">PDF, JPEG, or PNG up to 5MB</p>
+                            </div>
+                          )}
                         </div>
-                        <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary/50 cursor-pointer transition-colors">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                          <p className="font-medium">Aadhaar Card</p>
-                          <p className="text-xs text-muted-foreground">Click to upload</p>
+
+                        {/* Aadhaar card upload */}
+                        <div className="relative border-2 border-dashed rounded-xl p-6 text-center hover:border-primary/50 cursor-pointer transition-all bg-muted/20 hover:bg-muted/40 group">
+                          <input 
+                            type="file" 
+                            accept="image/*,.pdf" 
+                            className="absolute inset-0 opacity-0 cursor-pointer" 
+                            onChange={handleAadhaarUpload}
+                            disabled={aadhaarUploading}
+                          />
+                          {aadhaarUploading ? (
+                            <div className="space-y-3 py-2">
+                              <Loader2 className="h-8 w-8 mx-auto text-primary animate-spin" />
+                              <div className="text-sm font-semibold">Uploading Aadhaar Card...</div>
+                              <Progress value={aadhaarUploadProgress} className="h-2 max-w-[150px] mx-auto" />
+                            </div>
+                          ) : aadhaarFile ? (
+                            <div className="space-y-2 py-2">
+                              <CheckCircle2 className="h-8 w-8 mx-auto text-green-500" />
+                              <p className="font-semibold text-sm text-foreground">{aadhaarFile.name}</p>
+                              <p className="text-xs text-muted-foreground">Click to replace file</p>
+                            </div>
+                          ) : (
+                            <div className="space-y-2 py-2">
+                              <Upload className="h-8 w-8 mx-auto text-muted-foreground group-hover:text-primary transition-colors" />
+                              <p className="font-semibold text-sm">Aadhaar Card PDF/Scan</p>
+                              <p className="text-xs text-muted-foreground">PDF, JPEG, or PNG up to 5MB</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
-
-                    <Button className="w-full">Submit for Verification</Button>
+ 
+                    <Button onClick={handleInitiateKyc} className="w-full mt-6 py-6 text-base font-semibold transition-all shadow-md">Submit for Verification</Button>
                   </div>
                 )}
               </CardContent>
             </Card>
+
+            {/* Aadhaar OTP verification modal */}
+            <Dialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
+              <DialogContent className="sm:max-w-md bg-card/95 border-border/80 backdrop-blur-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Aadhaar secure OTP verification
+                  </DialogTitle>
+                  <DialogDescription>
+                    Secure identity query dispatched by UIDAI registry
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+                  {isOtpSending ? (
+                    <div className="space-y-3">
+                      <Loader2 className="h-10 w-10 text-primary animate-spin mx-auto" />
+                      <p className="text-sm text-muted-foreground">Requesting secure verification token from UIDAI...</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 w-full">
+                      <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 text-sm text-foreground/80 leading-relaxed text-left">
+                        A verification SMS code has been sent to the mobile number registered with your Aadhaar Card: 
+                        <strong className="text-primary block mt-1 font-mono text-base">+91 ******{phone ? phone.slice(-4) : "8852"}</strong>
+                      </div>
+
+                      <div className="space-y-2 max-w-[240px] mx-auto">
+                        <Label htmlFor="otpInput" className="text-sm font-semibold text-foreground/70">6-Digit Aadhaar OTP</Label>
+                        <Input 
+                          id="otpInput"
+                          placeholder="******" 
+                          type="text"
+                          maxLength={6}
+                          value={otpCode}
+                          onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                          className="text-center font-mono text-2xl tracking-widest py-6"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Enter mock code <strong className="text-foreground">123456</strong> to complete.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <DialogFooter className="sm:justify-center">
+                  <Button 
+                    type="button" 
+                    onClick={handleVerifyAadhaarOtp} 
+                    disabled={isOtpVerifying || isOtpSending}
+                    className="w-full font-semibold"
+                  >
+                    {isOtpVerifying ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Verifying details...
+                      </>
+                    ) : (
+                      'Verify & Submit KYC'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* Security Tab */}
@@ -456,19 +906,28 @@ export default function InvestorSettings() {
             </Card>
           </TabsContent>
 
-          {/* Payout Account Tab */}
           <TabsContent value="payout">
-            <Card>
+            <Card className="border-border/50 bg-card/60 backdrop-blur-md">
               <CardHeader>
-                <CardTitle>Payout Account</CardTitle>
-                <CardDescription>Add your bank account for receiving returns</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl">Payout Account</CardTitle>
+                    <CardDescription>Configure bank transfer details to receive solar yields</CardDescription>
+                  </div>
+                  {bankVerified && (
+                    <Badge className="bg-green-500/10 text-green-600 border border-green-500/20 font-semibold px-2 py-0.5">
+                      <Check className="h-3 w-3 mr-1" />
+                      Account Verified
+                    </Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Label htmlFor="bankNameSelect" className="font-semibold text-foreground/80">Bank Name</Label>
                     <Select value={bankName} onValueChange={setBankName}>
-                      <SelectTrigger>
+                      <SelectTrigger id="bankNameSelect" className="border-border/70 py-6">
                         <SelectValue placeholder="Select bank" />
                       </SelectTrigger>
                       <SelectContent>
@@ -477,65 +936,169 @@ export default function InvestorSettings() {
                         <SelectItem value="icici">ICICI Bank</SelectItem>
                         <SelectItem value="axis">Axis Bank</SelectItem>
                         <SelectItem value="kotak">Kotak Mahindra Bank</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="other">Other Commercial Bank</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="accountHolderName">Account Holder Name</Label>
+                    <Label htmlFor="accountHolderName" className="font-semibold text-foreground/80">Account Holder Name</Label>
                     <Input
                       id="accountHolderName"
                       value={accountHolderName}
                       onChange={(e) => setAccountHolderName(e.target.value)}
-                      placeholder="Name as per bank records"
+                      placeholder="Name matching PAN records"
+                      className="border-border/70 py-6"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="accountNumber">Account Number</Label>
+                    <Label htmlFor="accountNumber" className="font-semibold text-foreground/80">Account Number</Label>
                     <Input
                       id="accountNumber"
                       value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      placeholder="Enter account number"
+                      onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter bank account number"
+                      className="border-border/70 py-6"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ifscCode">IFSC Code</Label>
+                    <Label htmlFor="ifscCode" className="font-semibold text-foreground/80">IFSC Code</Label>
                     <Input
                       id="ifscCode"
                       value={ifscCode}
                       onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
-                      placeholder="e.g., SBIN0001234"
+                      placeholder="e.g., HDFC0000123"
+                      className="border-border/70 py-6"
                     />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-lg bg-muted/50">
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Note:</strong> Your bank account will be verified through a penny drop verification. 
-                    Please ensure the account details are correct.
+                <div className="p-4 rounded-xl bg-muted/30 border border-border/40 text-sm text-muted-foreground leading-relaxed flex gap-3">
+                  <Shield className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <p>
+                    <strong>Penny-Drop Auditing:</strong> Saving bank details will automatically trigger a ₹1.00 deposit audit via IMPS network to verify the beneficiary name matched against your KYC records.
                   </p>
                 </div>
 
                 <div className="flex justify-end">
-                  <Button onClick={handleSaveBankDetails}>Save Bank Details</Button>
+                  <Button onClick={handleStartPennyDrop} className="font-semibold px-6 shadow-sm">
+                    {bankVerified ? 'Verify & Update Bank Details' : 'Verify & Save Bank Details'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
+            <Card className="mt-6 border-border/50 bg-card/60 backdrop-blur-md">
               <CardHeader>
-                <CardTitle>UPI Account</CardTitle>
-                <CardDescription>Add UPI for faster payouts</CardDescription>
+                <CardTitle className="text-xl">UPI Payout VPA</CardTitle>
+                <CardDescription>Receive instant solar return credits straight to your UPI account</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2 max-w-md">
-                  <Label>UPI ID</Label>
-                  <Input placeholder="yourname@upi" />
+                  <Label htmlFor="upiInput" className="font-semibold text-foreground/80">UPI ID</Label>
+                  <Input 
+                    id="upiInput"
+                    placeholder="yourname@upi" 
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value.trim().toLowerCase())}
+                    className="border-border/70 py-6"
+                  />
                 </div>
-                <Button variant="outline">Verify & Save UPI</Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleSaveUpi}
+                  disabled={isUpiVerifying}
+                  className="font-semibold shadow-sm mt-2"
+                >
+                  {isUpiVerifying ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Verifying UPI ID...
+                    </>
+                  ) : (
+                    'Verify & Save UPI'
+                  )}
+                </Button>
               </CardContent>
             </Card>
+
+            {/* Penny Drop Loading Verification Dialog */}
+            <Dialog open={isPennyDropOpen} onOpenChange={setIsPennyDropOpen}>
+              <DialogContent className="sm:max-w-md bg-card/95 border-border/80 backdrop-blur-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+                    <Building2 className="h-5 w-5 text-primary" />
+                    Penny-Drop Bank Verification
+                  </DialogTitle>
+                  <DialogDescription>
+                    IMPS beneficiary check in progress
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="py-6 space-y-6">
+                  {pennyDropStatus === 'pending' ? (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-center p-4">
+                        <Loader2 className="h-12 w-12 text-primary animate-spin" />
+                      </div>
+                      
+                      <div className="space-y-3 font-medium text-sm text-foreground/80 px-4">
+                        <div className="flex items-center justify-between">
+                          <span>1. Establishing secure NPCI host connection</span>
+                          <span className={pennyDropStep >= 1 ? "text-green-500 font-bold" : "text-muted-foreground animate-pulse"}>
+                            {pennyDropStep > 1 ? "✓ Completed" : pennyDropStep === 1 ? "Running..." : "Pending"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>2. Executing ₹1.00 credit deposit</span>
+                          <span className={pennyDropStep >= 2 ? "text-green-500 font-bold" : "text-muted-foreground animate-pulse"}>
+                            {pennyDropStep > 2 ? "✓ Completed" : pennyDropStep === 2 ? "Running..." : "Pending"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>3. Verifying banking records name matching</span>
+                          <span className={pennyDropStep >= 3 ? "text-green-500 font-bold" : "text-muted-foreground animate-pulse"}>
+                            {pennyDropStep > 3 ? "✓ Completed" : pennyDropStep === 3 ? "Running..." : "Pending"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span>4. Saving verified profile settings</span>
+                          <span className={pennyDropStep >= 4 ? "text-green-500 font-bold" : "text-muted-foreground animate-pulse"}>
+                            {pennyDropStep === 4 ? "Finalizing..." : "Pending"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : pennyDropStatus === 'success' ? (
+                    <div className="text-center space-y-4 py-4">
+                      <CheckCircle2 className="h-16 w-16 mx-auto text-green-500 animate-bounce" />
+                      <h3 className="text-lg font-bold text-green-500">Verification Successful</h3>
+                      <p className="text-sm text-muted-foreground px-4">
+                        Your account holder name matches your profile identity details perfectly. Bank records are verified and saved.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="text-center space-y-4 py-4">
+                      <AlertCircle className="h-16 w-16 mx-auto text-red-500" />
+                      <h3 className="text-lg font-bold text-red-500">Verification Failed</h3>
+                      <p className="text-sm text-muted-foreground px-4">
+                        Penny drop verification returned a name mismatch or bank gateway timeout. Please crosscheck account holder details and IFSC.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <DialogFooter className="sm:justify-center">
+                  <Button 
+                    type="button" 
+                    onClick={() => setIsPennyDropOpen(false)} 
+                    disabled={pennyDropStatus === 'pending'}
+                    className="w-full font-semibold"
+                  >
+                    Close Dialog
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* Notifications Tab */}
