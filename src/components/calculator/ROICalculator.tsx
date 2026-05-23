@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { mockSolarAssets } from '@/data/mockData';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { Calculator, TrendingUp, Clock, IndianRupee } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 interface ScenarioResults {
   irr: number;
@@ -95,16 +96,6 @@ export function ROICalculator() {
     Expected: results.expected.cashFlows[idx].inflow,
     Aggressive: results.aggressive.cashFlows[idx].inflow,
   }));
-
-  function formatCurrency(amount: number): string {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(2)} Cr`;
-    }
-    if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(2)} L`;
-    }
-    return `₹${amount.toLocaleString('en-IN')}`;
-  }
 
   return (
     <div className="space-y-6">
