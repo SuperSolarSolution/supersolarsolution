@@ -43,7 +43,7 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogTrigger,
 } from '@/components/ui/responsive-dialog';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function InvestorWallet() {
@@ -87,6 +87,26 @@ export default function InvestorWallet() {
   const pendingReferrals = referralStats?.pendingReferrals || 0;
 
   const referralLink = `${window.location.origin}/register?ref=${referralCode}`;
+
+  const { totalCredited, totalInvested, returnTransactions, investmentTransactions } = useMemo(() => {
+    let credited = 0;
+    let invested = 0;
+    const returns = [];
+    const investments = [];
+
+    if (transactions) {
+      for (const tx of transactions) {
+        if (tx.type === 'return') {
+          credited += Number(tx.amount);
+          returns.push(tx);
+        } else if (tx.type === 'investment') {
+          invested += Number(tx.amount);
+          investments.push(tx);
+        }
+      }
+    }
+    return { totalCredited: credited, totalInvested: invested, returnTransactions: returns, investmentTransactions: investments };
+  }, [transactions]);
 
   const handleCopyReferral = () => {
     navigator.clipboard.writeText(referralCode);
@@ -352,7 +372,7 @@ export default function InvestorWallet() {
                 <div>
                   <p className="text-xs text-muted-foreground">Total Credited</p>
                   <p className="text-lg font-bold text-green-600">
-                    ₹{transactions?.filter(tx => tx.type === 'return').reduce((sum, tx) => sum + Number(tx.amount), 0).toLocaleString() || 0}
+                    ₹{totalCredited.toLocaleString() || 0}
                   </p>
                 </div>
               </div>
@@ -367,7 +387,7 @@ export default function InvestorWallet() {
                 <div>
                   <p className="text-xs text-muted-foreground">Total Invested</p>
                   <p className="text-lg font-bold text-red-600">
-                    ₹{transactions?.filter(tx => tx.type === 'investment').reduce((sum, tx) => sum + Number(tx.amount), 0).toLocaleString() || 0}
+                    ₹{totalInvested.toLocaleString() || 0}
                   </p>
                 </div>
               </div>
@@ -601,7 +621,7 @@ export default function InvestorWallet() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {transactions?.filter(tx => tx.type === 'return').map((tx) => (
+                      {returnTransactions.map((tx) => (
                         <TableRow key={tx.id}>
                           <TableCell className="text-xs md:text-sm">{new Date(tx.created_at).toLocaleDateString()}</TableCell>
                           <TableCell className="hidden md:table-cell">{tx.reference}</TableCell>
@@ -631,7 +651,7 @@ export default function InvestorWallet() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {transactions?.filter(tx => tx.type === 'investment').map((tx) => (
+                      {investmentTransactions.map((tx) => (
                         <TableRow key={tx.id}>
                           <TableCell className="text-xs md:text-sm">{new Date(tx.created_at).toLocaleDateString()}</TableCell>
                           <TableCell className="hidden md:table-cell">{tx.reference}</TableCell>

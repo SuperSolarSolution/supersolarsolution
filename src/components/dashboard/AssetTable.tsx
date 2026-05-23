@@ -82,7 +82,7 @@ export function AssetTable({ assets, onAssetClick, renderAction }: AssetTablePro
                   {statusLabels[asset.status]}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right font-medium">{formatCurrency(asset.totalInvestment, 1)}</TableCell>
+              <TableCell className="text-right font-medium">{formatCurrency(asset.totalInvestment, { decimals: 1 })}</TableCell>
               <TableCell className="text-right">
                 {((asset.fundedAmount / asset.totalInvestment) * 100).toFixed(0)}%
               </TableCell>

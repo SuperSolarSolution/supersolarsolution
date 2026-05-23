@@ -86,7 +86,10 @@ export default function Contracts() {
       name: string;
       aadhaar: string;
     }) => {
-      const sigHash = `sig_${type === 'lease' ? 'll' : 'ppa'}_${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+      const randomBytes = new Uint8Array(4);
+      window.crypto.getRandomValues(randomBytes);
+      const randomString = Array.from(randomBytes, byte => byte.toString(36).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
+      const sigHash = `sig_${type === 'lease' ? 'll' : 'ppa'}_${randomString}`;
       const sigMetadata = `${name}|${sigHash}|${aadhaar.replace(/\s/g, '').slice(-4)}`;
       const now = new Date().toISOString();
 
