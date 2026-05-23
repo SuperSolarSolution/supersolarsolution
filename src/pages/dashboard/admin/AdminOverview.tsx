@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { KPICard } from '@/components/dashboard/KPICard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,31 +24,50 @@ export default function AdminOverview() {
     const { data: allAssets } = useSolarAssets();
     const { data: profiles } = useAllProfilesWithRoles();
 
-    // Calculate KPIs
-    const totalAssets = allAssets?.length || 0;
-    const totalUsers = profiles?.length || 0;
-    const pendingKYC = profiles?.filter(p => p.kyc_status === 'pending').length || 0;
+    // Calculate KPIs and derived data efficiently
+    const { totalAssets, totalUsers, pendingKYC, totalAumSum, pendingApprovals } = useMemo(() => {
+        let totalAssets = 0;
+        let totalAumSum = 0;
+        if (allAssets) {
+            totalAssets = allAssets.length;
+            for (let i = 0; i < totalAssets; i++) {
+                totalAumSum += Number(allAssets[i].total_investment);
+            }
+        }
+
+        let totalUsers = 0;
+        let pendingKYC = 0;
+        const pendingApprovals = [];
+        if (profiles) {
+            totalUsers = profiles.length;
+            for (let i = 0; i < totalUsers; i++) {
+                const p = profiles[i];
+                if (p.kyc_status === 'pending') {
+                    pendingKYC++;
+                    if (pendingApprovals.length < 5) {
+                        pendingApprovals.push({
+                            id: p.id,
+                            name: p.full_name,
+                            role: p.role || 'unknown',
+                            kycStatus: p.kyc_status,
+                            date: new Date(p.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+                        });
+                    }
+                }
+            }
+        }
+
+        return { totalAssets, totalUsers, pendingKYC, totalAumSum, pendingApprovals };
+    }, [allAssets, profiles]);
 
     const kpis: KPIMetric[] = [
-        { label: 'Total AUM', value: `₹${((allAssets?.reduce((sum, a) => sum + Number(a.total_investment), 0) || 0) / 10000000).toFixed(1)} Cr`, trend: 'up', change: 15.2 },
+        { label: 'Total AUM', value: `₹${(totalAumSum / 10000000).toFixed(1)} Cr`, trend: 'up', change: 15.2 },
         { label: 'Total Users', value: totalUsers.toString(), trend: 'up', change: 8.5 },
         { label: 'Solar Assets', value: totalAssets.toString(), trend: 'up', change: 3 },
         { label: 'Platform Health', value: '99.9%', trend: 'stable' },
     ];
 
     const icons = [LayoutDashboard, Users, Sun, Shield];
-
-    // Pending approvals (users with pending KYC)
-    const pendingApprovals = profiles
-        ?.filter(p => p.kyc_status === 'pending')
-        .slice(0, 5)
-        .map(p => ({
-            id: p.id,
-            name: p.full_name,
-            role: p.role || 'unknown',
-            kycStatus: p.kyc_status,
-            date: new Date(p.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
-        })) || [];
 
     // Compliance items
     const complianceItems = [
