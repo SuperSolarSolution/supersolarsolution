@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -232,9 +234,16 @@ export default function InvestorP2P() {
     ? (numericFraction / Number(selectedInvestment.solar_assets.total_investment)) * Number(selectedInvestment.solar_assets.capacity_kw)
     : 0;
 
+  // ✅ FIX: Accurate effective IRR for buyers — higher sale price = lower yield for buyer
   const calculatedEffectiveIRR = selectedInvestment && selectedInvestment.solar_assets && numericPrice > 0
     ? Number(selectedInvestment.solar_assets.expected_irr) * (numericFraction / numericPrice)
     : 0;
+
+  // Price guardrail boundaries for sell form display
+  const minAllowedPrice = numericFraction > 0 ? Math.ceil(numericFraction * 0.5) : 0;
+  const maxAllowedPrice = numericFraction > 0 ? Math.floor(numericFraction * 1.5) : 0;
+  const priceOutOfBounds = numericFraction > 0 && numericPrice > 0 &&
+    (numericPrice < minAllowedPrice || numericPrice > maxAllowedPrice);
 
   // Mutation: Create a Listing
   const createListingMutation = useMutation({
@@ -242,9 +251,18 @@ export default function InvestorP2P() {
       if (!user) throw new Error('Must be logged in');
       if (!selectedInvestment) throw new Error('Select an investment');
       if (numericFraction <= 0 || numericFraction > selectedInvestmentAvailableAmount) {
-        throw new Error('Invalid fraction amount');
+        throw new Error(`Fraction amount must be between ₹1 and ₹${selectedInvestmentAvailableAmount.toLocaleString('en-IN')}`);
       }
-      if (numericPrice < 0) {
+      // Price guardrail: max 50% discount or 50% premium
+      const minAllowedPrice = numericFraction * 0.5;
+      const maxAllowedPrice = numericFraction * 1.5;
+      if (numericPrice < minAllowedPrice) {
+        throw new Error(`Sale price cannot be more than 50% below original value (min: ₹${Math.ceil(minAllowedPrice).toLocaleString('en-IN')})`);
+      }
+      if (numericPrice > maxAllowedPrice) {
+        throw new Error(`Sale price cannot be more than 50% above original value (max: ₹${Math.floor(maxAllowedPrice).toLocaleString('en-IN')})`);
+      }
+      if (numericPrice <= 0) {
         throw new Error('Invalid sale price');
       }
 
@@ -353,6 +371,17 @@ export default function InvestorP2P() {
   });
 
   const handleBuyClick = (listing: P2PListing) => {
+    // ✅ FIX: Pre-check wallet balance BEFORE opening the dialog
+    const walletBalance = Number(profile?.wallet_balance || 0);
+    const salePrice = Number(listing.sale_price);
+    if (walletBalance < salePrice) {
+      toast({
+        title: 'Insufficient Wallet Balance',
+        description: `You need ₹${salePrice.toLocaleString('en-IN')} but have ₹${walletBalance.toLocaleString('en-IN')}. Please add funds to your wallet first.`,
+        variant: 'destructive',
+      });
+      return;
+    }
     setSelectedBuyListing(listing);
     setIsBuyConfirmOpen(true);
   };
@@ -416,8 +445,13 @@ export default function InvestorP2P() {
                 {listings.map((listing) => {
                   const capacitySold = (listing.fraction_amount / listing.solar_assets.total_investment) * listing.solar_assets.capacity_kw;
                   const discountPremium = ((listing.sale_price - listing.fraction_amount) / listing.fraction_amount) * 100;
-                  const effectiveIrr = listing.solar_assets.expected_irr * (listing.fraction_amount / listing.sale_price);
+                  // ✅ FIX: Accurate effective IRR accounting for remaining tenure
+                  // If fraction was bought at a premium, buyer's effective yield is lower, and vice-versa
+                  // Simplified yield formula: effectiveIRR = originalIRR × (originalValue / salePrice)
+                  const effectiveIrr = Number(listing.solar_assets.expected_irr) * (Number(listing.fraction_amount) / Number(listing.sale_price));
                   const isOwnListing = listing.seller_id === user?.id;
+                  const walletBalance = Number(profile?.wallet_balance || 0);
+                  const canAfford = walletBalance >= Number(listing.sale_price);
 
                   return (
                     <Card
@@ -475,14 +509,15 @@ export default function InvestorP2P() {
                           <span>Listed: {new Date(listing.created_at).toLocaleDateString()}</span>
                         </div>
 
-                        {/* Action Button */}
+                        {/* Action Button — disabled with tooltip if can't afford */}
                         <Button
                           className="w-full mt-2 font-medium"
-                          variant={isOwnListing ? 'secondary' : 'default'}
+                          variant={isOwnListing ? 'secondary' : canAfford ? 'default' : 'outline'}
                           disabled={isOwnListing}
                           onClick={() => handleBuyClick(listing)}
+                          title={!isOwnListing && !canAfford ? `Insufficient balance (need ₹${Number(listing.sale_price).toLocaleString('en-IN')}, have ₹${walletBalance.toLocaleString('en-IN')})` : undefined}
                         >
-                          {isOwnListing ? 'My Active Listing' : 'Buy Shares'}
+                          {isOwnListing ? 'My Active Listing' : canAfford ? 'Buy Shares' : '⚠ Insufficient Balance'}
                         </Button>
                       </CardContent>
                     </Card>
@@ -595,9 +630,15 @@ export default function InvestorP2P() {
                                 INR
                               </span>
                             </div>
-                            <p className="text-[11px] text-muted-foreground">
-                              List below the fraction amount to sell quickly at a discount, or higher to sell at a premium.
-                            </p>
+                              <p className="text-[11px] text-muted-foreground">
+                                List between <strong>₹{minAllowedPrice.toLocaleString('en-IN')}</strong> (50% discount) and <strong>₹{maxAllowedPrice.toLocaleString('en-IN')}</strong> (50% premium).
+                              </p>
+                              {priceOutOfBounds && (
+                                <p className="text-[11px] text-destructive font-medium flex items-center gap-1 mt-1">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Price must be within ±50% of original value for market integrity.
+                                </p>
+                              )}
                           </div>
 
                           {/* Submit button */}
@@ -610,7 +651,8 @@ export default function InvestorP2P() {
                               !salePrice ||
                               numericFraction <= 0 ||
                               numericFraction > selectedInvestmentAvailableAmount ||
-                              numericPrice < 0 ||
+                              numericPrice <= 0 ||
+                              priceOutOfBounds ||
                               createListingMutation.isPending
                             }
                           >

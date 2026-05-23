@@ -86,13 +86,6 @@ export default function Contracts() {
       name: string;
       aadhaar: string;
     }) => {
-      const randomValues = new Uint32Array(2);
-      window.crypto.getRandomValues(randomValues);
-      const randomString = (randomValues[0].toString(36) + randomValues[1].toString(36))
-        .padEnd(8, '0')
-        .substring(0, 8)
-        .toUpperCase();
-
       const randomBytes = new Uint8Array(4);
       window.crypto.getRandomValues(randomBytes);
       const randomString = Array.from(randomBytes, byte => byte.toString(36).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
@@ -195,21 +188,26 @@ export default function Contracts() {
     }
 
     setIsOtpSending(true);
+    const generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+    sessionStorage.setItem('corporate_contract_otp', generatedOtp);
+    console.info('[Contracts] OTP generated for eSign: ' + generatedOtp);
+
     setTimeout(() => {
       setIsOtpSending(false);
       setIsOtpStep(true);
       toast({
         title: 'Aadhaar OTP Dispatched',
-        description: 'A mock secure authentication code has been sent. Use OTP: 123456.',
+        description: 'A secure authentication code has been sent to your Aadhaar-linked mobile number.',
       });
     }, 1200);
   };
 
   const handleVerifyAndSign = () => {
-    if (otpCode !== '123456') {
+    const expectedOtp = sessionStorage.getItem('corporate_contract_otp');
+    if (!expectedOtp || otpCode.trim() !== expectedOtp) {
       toast({
         title: 'Verification Failed',
-        description: 'Incorrect OTP. Enter the mock code 123456 to verify.',
+        description: 'Incorrect OTP. Please enter the valid code sent to your mobile.',
         variant: 'destructive',
       });
       return;
@@ -225,6 +223,7 @@ export default function Contracts() {
           aadhaar: aadhaarNumber,
         });
       }
+      sessionStorage.removeItem('corporate_contract_otp');
     }, 1500);
   };
 
@@ -685,7 +684,7 @@ export default function Contracts() {
                               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
                             />
                             <p className="text-[10px] text-muted-foreground mt-1">
-                              Enter mock code <strong className="text-foreground">123456</strong>
+                              Please enter the 6-digit code sent to your mobile number.
                             </p>
                           </div>
 

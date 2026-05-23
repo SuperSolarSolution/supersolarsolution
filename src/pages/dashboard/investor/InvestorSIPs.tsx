@@ -3,12 +3,18 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useSIPPlans, useSIPExecutions, useUpdateSIPStatus, SIPPlan } from '@/hooks/useSIPPlans';
 import {
   CalendarClock, Loader2, Pause, Play, XCircle, ChevronDown, ChevronUp,
-  IndianRupee, MapPin, TrendingUp
+  IndianRupee, MapPin, TrendingUp, AlertTriangle
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, differenceInHours, parseISO } from 'date-fns';
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,9 +32,20 @@ const statusConfig: Record<string, { label: string; class: string }> = {
 export default function InvestorSIPs() {
   const { data: sips, isLoading } = useSIPPlans();
   const updateStatus = useUpdateSIPStatus();
+  const [updatingSipId, setUpdatingSipId] = useState<string | null>(null);
 
-  const activeSIPs = sips?.filter(s => s.status === 'active') || [];
-  const totalMonthly = activeSIPs.reduce((sum, s) => sum + Number(s.amount), 0);
+  const handleUpdate = async (params: { sipId: string; status: 'active' | 'paused' | 'cancelled' }) => {
+    setUpdatingSipId(params.sipId);
+    try {
+      await updateStatus.mutateAsync(params);
+    } finally {
+      setUpdatingSipId(null);
+    }
+  };
+
+  const activeOrPaused = sips?.filter(s => s.status === 'active' || s.status === 'paused') || [];
+  const cancelled = sips?.filter(s => s.status === 'cancelled' || s.status === 'completed') || [];
+  const totalMonthly = sips?.filter(s => s.status === 'active').reduce((sum, s) => sum + Number(s.amount), 0) || 0;
   const totalInvested = sips?.reduce((sum, s) => sum + Number(s.total_invested), 0) || 0;
 
   if (isLoading) {
@@ -52,12 +69,11 @@ export default function InvestorSIPs() {
           <p className="text-sm text-muted-foreground">Manage your recurring solar investments</p>
         </div>
 
-        {/* Summary stats */}
         <div className="grid grid-cols-3 gap-2 md:gap-4">
           <Card>
             <CardContent className="p-3 md:p-4">
               <p className="text-xs text-muted-foreground">Active SIPs</p>
-              <p className="text-lg md:text-2xl font-bold">{activeSIPs.length}</p>
+              <p className="text-lg md:text-2xl font-bold">{activeOrPaused.filter(s => s.status === 'active').length}</p>
             </CardContent>
           </Card>
           <Card>
@@ -74,24 +90,22 @@ export default function InvestorSIPs() {
           </Card>
         </div>
 
-        {/* SIP Cards */}
-        {sips && sips.length > 0 ? (
-          <div className="space-y-3">
-            {sips.map((sip) => (
-              <SIPCard key={sip.id} sip={sip} onUpdateStatus={updateStatus.mutate} isUpdating={updateStatus.isPending} />
+        <Tabs defaultValue="active">
+          <TabsList>
+            <TabsTrigger value="active">Active/Paused</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+          </TabsList>
+          <TabsContent value="active" className="space-y-3 mt-4">
+            {activeOrPaused.map((sip) => (
+              <SIPCard key={sip.id} sip={sip} onUpdateStatus={handleUpdate} isUpdating={updatingSipId === sip.id} />
             ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <CalendarClock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="font-semibold mb-2">No SIPs Yet</h3>
-              <p className="text-muted-foreground text-sm">
-                Go to Solar Assets and click "Start SIP" on any asset to begin.
-              </p>
-            </CardContent>
-          </Card>
-        )}
+          </TabsContent>
+          <TabsContent value="history" className="space-y-3 mt-4">
+            {cancelled.map((sip) => (
+              <SIPCard key={sip.id} sip={sip} onUpdateStatus={handleUpdate} isUpdating={updatingSipId === sip.id} />
+            ))}
+          </TabsContent>
+        </Tabs>
       </div>
     </DashboardLayout>
   );
@@ -105,6 +119,9 @@ function SIPCard({ sip, onUpdateStatus, isUpdating }: {
   const [showHistory, setShowHistory] = useState(false);
   const { data: executions } = useSIPExecutions(showHistory ? sip.id : null);
   const config = statusConfig[sip.status];
+  
+  const nextDate = sip.next_execution_date ? parseISO(sip.next_execution_date) : null;
+  const isCloseToExecution = nextDate ? differenceInHours(nextDate, new Date()) < 24 : false;
 
   return (
     <Card>
@@ -130,7 +147,7 @@ function SIPCard({ sip, onUpdateStatus, isUpdating }: {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">SIP Date</p>
-            <p className="font-semibold">{sip.sip_date}{getOrdinalSuffix(sip.sip_date)} of month</p>
+            <p className="font-semibold">{sip.sip_date}{getOrdinalSuffix(sip.sip_date)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Next Debit</p>
@@ -147,75 +164,62 @@ function SIPCard({ sip, onUpdateStatus, isUpdating }: {
           </div>
         </div>
 
-        {sip.max_executions && (
-          <p className="text-xs text-muted-foreground mb-3">
-            Installments: {sip.executions_count} / {sip.max_executions}
-          </p>
+        {sip.status === 'active' && isCloseToExecution && (
+          <div className="flex items-center gap-2 p-2 mb-3 bg-amber-500/10 text-amber-600 text-xs rounded border border-amber-500/20">
+            <AlertTriangle className="h-4 w-4" />
+            <span>Next debit is within 24 hours. Changes may apply from next cycle.</span>
+          </div>
         )}
 
-        {/* Actions */}
         <div className="flex items-center gap-2 flex-wrap">
           {sip.status === 'active' && (
             <>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => onUpdateStatus({ sipId: sip.id, status: 'paused' })}
-                disabled={isUpdating}
-              >
-                <Pause className="h-3 w-3 mr-1" /> Pause
+              <Button size="sm" variant="outline" onClick={() => onUpdateStatus({ sipId: sip.id, status: 'paused' })} disabled={isUpdating}>
+                {isUpdating ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Pause className="h-3 w-3 mr-1" />} Pause
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="text-destructive border-destructive/30"
-                onClick={() => onUpdateStatus({ sipId: sip.id, status: 'cancelled' })}
-                disabled={isUpdating}
-              >
-                <XCircle className="h-3 w-3 mr-1" /> Cancel
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-destructive border-destructive/30" disabled={isUpdating}>
+                    <XCircle className="h-3 w-3 mr-1" /> Cancel
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Cancel SIP Plan?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently cancel your monthly SIP of <strong>₹{Number(sip.amount).toLocaleString('en-IN')}</strong> for <strong>{sip.solar_assets?.name || 'Solar Asset'}</strong>. This action is immediate and cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>No, Keep Active</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => onUpdateStatus({ sipId: sip.id, status: 'cancelled' })}>Yes, Cancel SIP</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </>
           )}
           {sip.status === 'paused' && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => onUpdateStatus({ sipId: sip.id, status: 'active' })}
-              disabled={isUpdating}
-            >
-              <Play className="h-3 w-3 mr-1" /> Resume
+            <Button size="sm" variant="outline" onClick={() => onUpdateStatus({ sipId: sip.id, status: 'active' })} disabled={isUpdating}>
+              {isUpdating ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Play className="h-3 w-3 mr-1" />} Resume
             </Button>
           )}
 
-          <Collapsible open={showHistory} onOpenChange={setShowHistory}>
-            <CollapsibleTrigger asChild>
-              <Button size="sm" variant="ghost" className="ml-auto">
-                History {showHistory ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
-              </Button>
-            </CollapsibleTrigger>
-          </Collapsible>
+          <Button size="sm" variant="ghost" className="ml-auto" onClick={() => setShowHistory(!showHistory)}>
+            History {showHistory ? <ChevronUp className="h-3 w-3 ml-1" /> : <ChevronDown className="h-3 w-3 ml-1" />}
+          </Button>
         </div>
 
-        {/* Execution history */}
-        <Collapsible open={showHistory} onOpenChange={setShowHistory}>
+        <Collapsible open={showHistory}>
           <CollapsibleContent>
             <div className="mt-3 border-t pt-3 space-y-2">
               {executions && executions.length > 0 ? (
                 executions.map((exec) => (
                   <div key={exec.id} className="flex items-center justify-between text-sm py-1">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={
-                        exec.status === 'success' ? 'bg-green-500/10 text-green-600' :
-                        exec.status === 'skipped' ? 'bg-yellow-500/10 text-yellow-600' :
-                        'bg-red-500/10 text-red-600'
-                      }>
-                        {exec.status}
-                      </Badge>
+                      <Badge variant="outline" className={exec.status === 'success' ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}>{exec.status}</Badge>
                       <span>₹{Number(exec.amount).toLocaleString('en-IN')}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {format(new Date(exec.executed_at), 'dd MMM yyyy')}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{format(new Date(exec.executed_at), 'dd MMM yyyy')}</span>
                   </div>
                 ))
               ) : (
