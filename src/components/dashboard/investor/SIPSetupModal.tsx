@@ -42,6 +42,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { getOrdinalSuffix } from '@/lib/utils';
 
 interface SIPSetupModalProps {
   isOpen: boolean;
@@ -103,7 +104,10 @@ export function SIPSetupModal({ isOpen, onClose, asset }: SIPSetupModalProps) {
   const handleCreateMandate = () => {
     setMandateStep(2);
     setTimeout(() => {
-      const uMRN = 'UMRN' + Math.floor(100000000000 + Math.random() * 900000000000);
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+      const randomDecimal = array[0] / (0xffffffff + 1);
+      const uMRN = 'UMRN' + Math.floor(100000000000 + randomDecimal * 900000000000);
       setGeneratedMandateId(uMRN);
       setMandateStep(3);
     }, 2500);
@@ -454,10 +458,4 @@ export function SIPSetupModal({ isOpen, onClose, asset }: SIPSetupModalProps) {
       </Dialog>
     </>
   );
-}
-
-function getOrdinalSuffix(n: number) {
-  const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
-  return s[(v - 20) % 10] || s[v] || s[0];
 }

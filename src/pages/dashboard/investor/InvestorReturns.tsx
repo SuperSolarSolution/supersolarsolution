@@ -15,6 +15,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { useMemo } from 'react';
 
 export default function InvestorReturns() {
   const { data: investments, isLoading: investmentsLoading } = useInvestments();
@@ -22,9 +23,17 @@ export default function InvestorReturns() {
 
   const isLoading = investmentsLoading || transactionsLoading;
 
-  const totalActualReturns = investments?.reduce((sum, inv) => sum + Number(inv.actual_returns), 0) || 0;
-  const totalExpectedReturns = investments?.reduce((sum, inv) => sum + Number(inv.expected_returns), 0) || 0;
-  const totalInvested = investments?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
+  const { totalActualReturns, totalExpectedReturns, totalInvested } = useMemo(() => {
+    return investments?.reduce(
+      (acc, inv) => {
+        acc.totalActualReturns += Number(inv.actual_returns);
+        acc.totalExpectedReturns += Number(inv.expected_returns);
+        acc.totalInvested += Number(inv.amount);
+        return acc;
+      },
+      { totalActualReturns: 0, totalExpectedReturns: 0, totalInvested: 0 }
+    ) || { totalActualReturns: 0, totalExpectedReturns: 0, totalInvested: 0 };
+  }, [investments]);
 
   // Filter return transactions
   const returnTransactions = transactions?.filter(tx => tx.type === 'return') || [];
