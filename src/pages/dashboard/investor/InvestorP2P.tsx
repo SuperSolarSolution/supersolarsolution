@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -198,11 +198,20 @@ export default function InvestorP2P() {
     enabled: !!user && activeTab === 'my-listings',
   });
 
-  // Helper: Sum of user's active listings amounts per investment to calculate remaining available sell amount
+  // Precompute the sum of active listings per investment to avoid O(N*M) lookups
+  const listedAmountsByInvestmentId = useMemo(() => {
+    const amounts: Record<string, number> = {};
+    for (const listing of myActiveListings) {
+      if (listing.investment_id) {
+        amounts[listing.investment_id] = (amounts[listing.investment_id] || 0) + Number(listing.fraction_amount || 0);
+      }
+    }
+    return amounts;
+  }, [myActiveListings]);
+
+  // Helper: Get sum of user's active listings amounts per investment to calculate remaining available sell amount
   const getListedAmountForInvestment = (investmentId: string) => {
-    return myActiveListings
-      .filter((l) => l.investment_id === investmentId)
-      .reduce((sum, l) => sum + Number(l.fraction_amount), 0);
+    return listedAmountsByInvestmentId[investmentId] || 0;
   };
 
   // Find currently selected investment in the list form

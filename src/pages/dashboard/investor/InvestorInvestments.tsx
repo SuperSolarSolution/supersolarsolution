@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function InvestorInvestments() {
@@ -23,9 +23,18 @@ export default function InvestorInvestments() {
     statusFilter === 'all' ? true : inv.status === statusFilter
   ) || [];
 
-  const totalInvested = investments?.reduce((sum, inv) => sum + Number(inv.amount), 0) || 0;
-  const totalExpected = investments?.reduce((sum, inv) => sum + Number(inv.expected_returns), 0) || 0;
-  const totalActual = investments?.reduce((sum, inv) => sum + Number(inv.actual_returns), 0) || 0;
+  const { totalInvested, totalExpected, totalActual } = useMemo(() => {
+    if (!investments) return { totalInvested: 0, totalExpected: 0, totalActual: 0 };
+    return investments.reduce(
+      (acc, inv) => {
+        acc.totalInvested += Number(inv.amount) || 0;
+        acc.totalExpected += Number(inv.expected_returns) || 0;
+        acc.totalActual += Number(inv.actual_returns) || 0;
+        return acc;
+      },
+      { totalInvested: 0, totalExpected: 0, totalActual: 0 }
+    );
+  }, [investments]);
 
   const statusColors: Record<string, string> = {
     committed: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',

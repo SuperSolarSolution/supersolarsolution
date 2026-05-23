@@ -16,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { useMemo } from 'react';
 
 export default function InvestorReturns() {
   const { data: investments, isLoading: investmentsLoading } = useInvestments();
