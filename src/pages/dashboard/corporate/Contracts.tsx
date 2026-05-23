@@ -86,6 +86,13 @@ export default function Contracts() {
       name: string;
       aadhaar: string;
     }) => {
+      const randomValues = new Uint32Array(2);
+      window.crypto.getRandomValues(randomValues);
+      const randomString = (randomValues[0].toString(36) + randomValues[1].toString(36))
+        .padEnd(8, '0')
+        .substring(0, 8)
+        .toUpperCase();
+
       const randomBytes = new Uint8Array(4);
       window.crypto.getRandomValues(randomBytes);
       const randomString = Array.from(randomBytes, byte => byte.toString(36).padStart(2, '0')).join('').substring(0, 8).toUpperCase();
