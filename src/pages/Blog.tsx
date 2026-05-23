@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 export default function Blog() {
   const [activeCategory, setActiveCategory] = useState<string>('All');
-  const categories = ['All', ...getAllCategories()];
+  const categories = ['All', ...getAllCategories()].filter(Boolean);
   const filtered = activeCategory === 'All'
     ? blogPosts
     : blogPosts.filter((p) => p.category === activeCategory);
