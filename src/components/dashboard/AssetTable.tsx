@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 
 interface AssetTableProps {
   assets: SolarAsset[];
@@ -48,16 +48,6 @@ const riskColors: Record<SolarAsset['riskScore'], string> = {
   high: 'bg-red-100 text-red-700',
 };
 
-function formatCurrency(amount: number): string {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(1)} Cr`;
-  }
-  if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(1)} L`;
-  }
-  return `₹${amount.toLocaleString('en-IN')}`;
-}
-
 export function AssetTable({ assets, onAssetClick, renderAction }: AssetTableProps) {
   return (
     <div className="rounded-lg border border-border bg-card">
@@ -92,7 +82,7 @@ export function AssetTable({ assets, onAssetClick, renderAction }: AssetTablePro
                   {statusLabels[asset.status]}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right font-medium">{formatCurrency(asset.totalInvestment)}</TableCell>
+              <TableCell className="text-right font-medium">{formatCurrency(asset.totalInvestment, { decimals: 1 })}</TableCell>
               <TableCell className="text-right">
                 {((asset.fundedAmount / asset.totalInvestment) * 100).toFixed(0)}%
               </TableCell>
