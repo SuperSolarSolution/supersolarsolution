@@ -445,11 +445,11 @@ export default function InvestorWallet() {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">2</span>
-                      They sign up and make their first investment
+                      They sign up and add at least ₹5,000 to their wallet
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">3</span>
-                      You both earn ₹250 bonus on successful investment!
+                      You both earn ₹250 bonus on successful wallet top-up!
                     </li>
                   </ul>
                 </div>
@@ -472,7 +472,7 @@ export default function InvestorWallet() {
                   <p className="text-xs text-muted-foreground mb-0.5">Pending Referrals</p>
                   <p className="text-lg font-bold">{pendingReferrals}</p>
                   <p className="text-xs text-muted-foreground">
-                    Waiting for first investment
+                    Waiting for ₹5,000 wallet top-up
                   </p>
                 </div>
                 <Button className="w-full hidden md:flex" onClick={handleShareReferral}>
