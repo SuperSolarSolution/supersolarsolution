@@ -292,7 +292,10 @@ export default function InvestorSettings() {
     setOtpSent(false);
 
     // Generate a cryptographically random 6-digit OTP and store in sessionStorage
-    const generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    const randomValue = array[0] / (0xffffffff + 1);
+    const generatedOtp = String(Math.floor(100000 + randomValue * 900000));
     sessionStorage.setItem('kyc_otp', generatedOtp);
 
     // In production, this would call a Supabase Edge Function to send SMS via Twilio/MSG91.
