@@ -8,8 +8,14 @@ declare global {
   }
 }
 
+let loadScriptPromise: Promise<boolean> | null = null;
+
 function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
+  if (loadScriptPromise) {
+    return loadScriptPromise;
+  }
+
+  loadScriptPromise = new Promise((resolve) => {
     if (window.Razorpay) {
       resolve(true);
       return;
@@ -17,9 +23,14 @@ function loadRazorpayScript(): Promise<boolean> {
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
+    script.onerror = () => {
+      loadScriptPromise = null;
+      resolve(false);
+    };
     document.body.appendChild(script);
   });
+
+  return loadScriptPromise;
 }
 
 interface UseRazorpayOptions {
