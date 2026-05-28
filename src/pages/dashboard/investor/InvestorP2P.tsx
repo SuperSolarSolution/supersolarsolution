@@ -105,7 +105,8 @@ export default function InvestorP2P() {
             capacity_kw,
             total_investment,
             expected_irr
-          )
+          ),
+          profile:profiles!p2p_listings_seller_id_fkey(full_name)
         `)
         .eq('status', 'active')
         .order('created_at', { ascending: false });
@@ -113,20 +114,9 @@ export default function InvestorP2P() {
       if (error) throw error;
       if (!data || data.length === 0) return [];
 
-      // Fetch seller profile names client-side to bypass relation join limitations
-      const sellerIds = Array.from(new Set(data.map((l: any) => l.seller_id)));
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', sellerIds);
-
-      if (profileError) throw profileError;
-
-      const profileMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
-
       return data.map((l: any) => ({
         ...l,
-        seller_name: profileMap.get(l.seller_id) || 'Anonymous Seller',
+        seller_name: l.profile?.full_name || 'Anonymous Seller',
       })) as P2PListing[];
     },
     enabled: !!user,
