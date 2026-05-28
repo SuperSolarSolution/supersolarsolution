@@ -18,6 +18,6 @@ export function formatCurrency(amount: number, options?: { decimals?: number }):
 
 export function getOrdinalSuffix(n: number) {
   const s = ['th', 'st', 'nd', 'rd'];
-  const v = n % 100;
+  const v = Math.abs(n) % 100;
   return s[(v - 20) % 10] || s[v] || s[0];
 }

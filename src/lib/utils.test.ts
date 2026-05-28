@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cn, formatCurrency } from './utils';
+import { cn, formatCurrency, getOrdinalSuffix } from './utils';
 
 describe('cn utility', () => {
   it('merges standard string classes', () => {
@@ -72,5 +72,55 @@ describe('formatCurrency utility', () => {
     // Let's verify its current behavior
     expect(formatCurrency(-50000)).toBe('₹-50,000');
     expect(formatCurrency(-150000)).toBe('₹-1,50,000'); // Falls through since -150000 is not >= 100000
+  });
+});
+
+describe('getOrdinalSuffix utility', () => {
+  it('returns "st" for numbers ending in 1 (except 11)', () => {
+    expect(getOrdinalSuffix(1)).toBe('st');
+    expect(getOrdinalSuffix(21)).toBe('st');
+    expect(getOrdinalSuffix(31)).toBe('st');
+    expect(getOrdinalSuffix(101)).toBe('st');
+  });
+
+  it('returns "nd" for numbers ending in 2 (except 12)', () => {
+    expect(getOrdinalSuffix(2)).toBe('nd');
+    expect(getOrdinalSuffix(22)).toBe('nd');
+    expect(getOrdinalSuffix(32)).toBe('nd');
+    expect(getOrdinalSuffix(102)).toBe('nd');
+  });
+
+  it('returns "rd" for numbers ending in 3 (except 13)', () => {
+    expect(getOrdinalSuffix(3)).toBe('rd');
+    expect(getOrdinalSuffix(23)).toBe('rd');
+    expect(getOrdinalSuffix(33)).toBe('rd');
+    expect(getOrdinalSuffix(103)).toBe('rd');
+  });
+
+  it('returns "th" for numbers ending in 11, 12, 13', () => {
+    expect(getOrdinalSuffix(11)).toBe('th');
+    expect(getOrdinalSuffix(12)).toBe('th');
+    expect(getOrdinalSuffix(13)).toBe('th');
+    expect(getOrdinalSuffix(111)).toBe('th');
+    expect(getOrdinalSuffix(112)).toBe('th');
+    expect(getOrdinalSuffix(113)).toBe('th');
+  });
+
+  it('returns "th" for numbers ending in 0 or 4-9', () => {
+    expect(getOrdinalSuffix(0)).toBe('th');
+    expect(getOrdinalSuffix(4)).toBe('th');
+    expect(getOrdinalSuffix(9)).toBe('th');
+    expect(getOrdinalSuffix(10)).toBe('th');
+    expect(getOrdinalSuffix(20)).toBe('th');
+    expect(getOrdinalSuffix(100)).toBe('th');
+    expect(getOrdinalSuffix(104)).toBe('th');
+  });
+
+  it('handles negative numbers correctly', () => {
+    expect(getOrdinalSuffix(-1)).toBe('st');
+    expect(getOrdinalSuffix(-2)).toBe('nd');
+    expect(getOrdinalSuffix(-3)).toBe('rd');
+    expect(getOrdinalSuffix(-11)).toBe('th');
+    expect(getOrdinalSuffix(-21)).toBe('st');
   });
 });
