@@ -5,7 +5,7 @@ import { AssetTable } from '@/components/dashboard/AssetTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNBFCFunding, useFundingMilestones } from '@/hooks/useNBFCFunding';
+import { useNBFCFunding } from '@/hooks/useNBFCFunding';
 import { useSolarAssets } from '@/hooks/useSolarAssets';
 import { Wallet, TrendingUp, PieChart, Shield, AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
