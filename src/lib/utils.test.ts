@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { cn } from './utils';
+import { cn, formatCurrency } from './utils';
 
 describe('cn utility', () => {
   it('merges standard string classes', () => {
@@ -36,5 +36,41 @@ describe('cn utility', () => {
         false && 'hidden'
       )
     ).toBe('text-black bg-blue-500');
+  });
+});
+
+describe('formatCurrency utility', () => {
+  it('formats amounts less than 1 Lakh with standard Indian locale string', () => {
+    expect(formatCurrency(0)).toBe('₹0');
+    expect(formatCurrency(500)).toBe('₹500');
+    expect(formatCurrency(50000)).toBe('₹50,000');
+    expect(formatCurrency(99999)).toBe('₹99,999');
+  });
+
+  it('formats amounts between 1 Lakh and 1 Crore with L suffix', () => {
+    expect(formatCurrency(100000)).toBe('₹1.00 L');
+    expect(formatCurrency(150000)).toBe('₹1.50 L');
+    expect(formatCurrency(9900000)).toBe('₹99.00 L');
+  });
+
+  it('formats amounts greater than or equal to 1 Crore with Cr suffix', () => {
+    expect(formatCurrency(10000000)).toBe('₹1.00 Cr');
+    expect(formatCurrency(15000000)).toBe('₹1.50 Cr');
+    expect(formatCurrency(100000000)).toBe('₹10.00 Cr');
+  });
+
+  it('handles custom decimal precision via options', () => {
+    expect(formatCurrency(150000, { decimals: 0 })).toBe('₹2 L'); // rounds up
+    expect(formatCurrency(150000, { decimals: 1 })).toBe('₹1.5 L');
+    expect(formatCurrency(155000, { decimals: 1 })).toBe('₹1.6 L');
+    expect(formatCurrency(15000000, { decimals: 0 })).toBe('₹2 Cr');
+    expect(formatCurrency(15000000, { decimals: 3 })).toBe('₹1.500 Cr');
+  });
+
+  it('handles negative amounts correctly', () => {
+    // Note: The current implementation handles negative numbers simply by falling through to the localeString
+    // Let's verify its current behavior
+    expect(formatCurrency(-50000)).toBe('₹-50,000');
+    expect(formatCurrency(-150000)).toBe('₹-1,50,000'); // Falls through since -150000 is not >= 100000
   });
 });
