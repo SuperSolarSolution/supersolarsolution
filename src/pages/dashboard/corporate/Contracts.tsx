@@ -188,7 +188,10 @@ export default function Contracts() {
     }
 
     setIsOtpSending(true);
-    const generatedOtp = String(Math.floor(100000 + Math.random() * 900000));
+    const randomBuffer = new Uint32Array(1);
+    window.crypto.getRandomValues(randomBuffer);
+    const randomNumber = randomBuffer[0] / (0xFFFFFFFF + 1);
+    const generatedOtp = String(Math.floor(100000 + randomNumber * 900000));
     sessionStorage.setItem('corporate_contract_otp', generatedOtp);
     console.info('[Contracts] OTP generated for eSign: ' + generatedOtp);
 
