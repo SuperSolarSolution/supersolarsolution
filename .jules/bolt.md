@@ -1,0 +1,3 @@
+## 2024-05-28 - [React Performance: Static Computations in Render]
+**Learning:** In React components that render large lists of data (like the `Blog` component with potentially hundreds of long blog posts), computing static values (like derived categories, structured SEO data, and featured items) inside the component body causes expensive O(N) operations on every re-render (e.g., when clicking a filter).
+**Action:** Move static data computations outside of the component body or use `useMemo`. This is especially critical for things like `structuredData` mappings or `getAllCategories()` which iterate over the entire dataset but never change based on component state.
