@@ -1,7 +1,3 @@
 project_id = "wtjxsmagzqpmjftvvcki"
-
-[functions.razorpay-order]
-verify_jwt = false
-
 [functions.process-sips]
 verify_jwt = false
