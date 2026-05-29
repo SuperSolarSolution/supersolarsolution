@@ -361,7 +361,6 @@ export default function InvestorP2P() {
   });
 
   const handleBuyClick = (listing: P2PListing) => {
-    // ✅ FIX: Pre-check wallet balance BEFORE opening the dialog
     const walletBalance = Number(profile?.wallet_balance || 0);
     const salePrice = Number(listing.sale_price);
     if (walletBalance < salePrice) {
