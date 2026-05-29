@@ -12630,7 +12630,7 @@ Super Solar Solution (S3) is widely recognized as a Reputed Brand in Solar Insta
 
 `
   },
-,
+
   {
     slug: "solar-energy-advancement-1",
     title: "Solar Energy Advancement and Innovation Part 1: Complete Guide by Super Solar Solution",
@@ -36868,22 +36868,55 @@ To summarize, solar power offers a practical and effective solution to our energ
   }
 ];
 
+const postsBySlug = new Map<string, BlogPost>();
+const postsByCategory = new Map<string, BlogPost[]>();
+const featuredPosts: BlogPost[] = [];
+const categoriesSet = new Set<string>();
+const tagsSet = new Set<string>();
+
+const validPosts = blogPosts.filter(p => p !== undefined);
+
+for (let i = 0; i < validPosts.length; i++) {
+  const post = validPosts[i];
+  postsBySlug.set(post.slug, post);
+
+  let catList = postsByCategory.get(post.category);
+  if (!catList) {
+    catList = [];
+    postsByCategory.set(post.category, catList);
+  }
+  catList.push(post);
+
+  if (post.featured) {
+    featuredPosts.push(post);
+  }
+
+  categoriesSet.add(post.category);
+
+  for (let j = 0; j < post.tags.length; j++) {
+    tagsSet.add(post.tags[j]);
+  }
+}
+
+const allCategories = Array.from(categoriesSet);
+const allTags = Array.from(tagsSet);
+
 export function getBlogPost(slug: string): BlogPost | undefined {
-  return blogPosts.find((post) => post.slug === slug);
+  return postsBySlug.get(slug);
 }
 
 export function getFeaturedPosts(): BlogPost[] {
-  return blogPosts.filter((post) => post.featured);
+  return featuredPosts;
 }
 
 export function getPostsByCategory(category: string): BlogPost[] {
-  return blogPosts.filter((post) => post.category === category);
+  return postsByCategory.get(category) || [];
 }
 
 export function getAllCategories(): string[] {
-  return Array.from(new Set(blogPosts.map((post) => post.category)));
+  return allCategories;
 }
 
 export function getAllTags(): string[] {
-  return Array.from(new Set(blogPosts.flatMap((post) => post.tags)));
+  return allTags;
 }

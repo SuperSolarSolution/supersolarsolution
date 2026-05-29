@@ -10,8 +10,9 @@ import Index from "./pages/Index";
 import Calculator from "./pages/Calculator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Blog from "./pages/Blog";
-import BlogPost from "./pages/BlogPost";
+import { lazy, Suspense } from "react";
+const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 import InvestorDashboard from "./pages/dashboard/InvestorDashboard";
 import InvestorInvestments from "./pages/dashboard/investor/InvestorInvestments";
 import InvestorAssets from "./pages/dashboard/investor/InvestorAssets";
@@ -58,8 +59,8 @@ const App = () => (
                     <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="/calculator" element={<Calculator />} />
-                        <Route path="/blog" element={<Blog />} />
-                        <Route path="/blog/:slug" element={<BlogPost />} />
+                        <Route path="/blog" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}><Blog /></Suspense>} />
+                        <Route path="/blog/:slug" element={<Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}><BlogPost /></Suspense>} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
 
