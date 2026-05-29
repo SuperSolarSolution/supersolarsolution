@@ -1,3 +1,7 @@
+# S³ Super Solar Solutions – robots.txt
+# https://supersolarsolutions.in
+
+# Traditional search crawlers
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +14,63 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+# AI / LLM crawlers — explicitly allowed
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Gemini
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# All other bots
 User-agent: *
 Allow: /
+
+# Disallow dashboard (auth-protected, no value for crawlers)
+User-agent: *
+Disallow: /dashboard/
+
+# Sitemaps
+Sitemap: https://supersolarsolutions.in/sitemap.xml
+Sitemap: https://supersolarsolutions.in/llms.txt

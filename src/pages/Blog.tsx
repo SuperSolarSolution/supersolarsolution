@@ -61,6 +61,7 @@ export default function Blog() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Solar Energy Blog India | S³ Solar" />
         <meta name="twitter:description" content="Expert insights on solar investment, PPA financing, and corporate solar in India." />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <script type="application/ld+json">{JSON.stringify(structuredData)}</script>
       </Helmet>
 

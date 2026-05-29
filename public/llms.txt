@@ -1,0 +1,83 @@
+# S³ Super Solar Solutions
+
+> India's premier solar asset financing and leasing platform connecting P2P investors, NBFCs, corporates, and solar implementers.
+
+S³ (Super Solar Solutions) is a structured financial infrastructure platform for solar energy investment in India. It provides auditable, asset-backed solar financing through a multi-party ecosystem.
+
+## What S³ Does
+
+S³ enables four types of participants to transact in verified solar infrastructure:
+
+- **Investors (P2P)**: Retail and institutional investors fund solar assets and earn structured returns (avg. 15% IRR) through lease and Power Purchase Agreement (PPA) models.
+- **Corporates**: Companies reduce energy costs by adopting solar under PPA or lease structures, achieving sustainability and ESG goals.
+- **NBFCs (Non-Banking Financial Companies)**: Regulated lenders deploy capital into verified solar projects with full audit trails.
+- **Implementers**: Solar installation companies build and maintain assets using project management tools on the platform.
+
+## Key Platform Features
+
+- **Asset-Backed Security**: Every investment is tied to tangible, physical solar infrastructure.
+- **NBFC-Compliant**: Full regulatory compliance with Reserve Bank of India (RBI) NBFC guidelines.
+- **Structured Returns**: Investors receive returns via solar lease payments or PPA revenue, fully auditable.
+- **Solar SIPs**: Systematic Investment Plans for monthly solar investment (similar to mutual fund SIPs).
+- **P2P Lending**: Peer-to-peer solar financing marketplace for retail investors.
+- **ROI Calculator**: Free pre-investment return calculator to model IRR and cash flows before committing capital.
+- **Multi-Role Dashboard**: Role-specific portals for investors, corporates, NBFCs, and implementers.
+
+## Platform Statistics
+
+- ₹120 Crore+ Assets Under Management
+- 24+ Solar Projects funded
+- 15% Average IRR for investors
+- 1,200+ Active Investors
+
+## Key Pages
+
+- Homepage: https://supersolarsolutions.in/
+- Blog / Knowledge Hub: https://supersolarsolutions.in/blog
+- ROI Calculator: https://supersolarsolutions.in/calculator
+- Investor Registration: https://supersolarsolutions.in/register
+- Login: https://supersolarsolutions.in/login
+
+## Blog Topics Covered
+
+The S³ Knowledge Hub publishes expert articles on:
+- Solar energy investment in India
+- Power Purchase Agreements (PPA) explained
+- Solar SIP (Systematic Investment Plans)
+- NBFC solar financing regulations
+- Corporate solar adoption and ESG strategy
+- Government solar policies (PM Surya Ghar, PLI scheme)
+- Rooftop vs. ground-mounted solar comparisons
+- Solar asset maintenance and O&M
+- Renewable energy tax benefits in India
+
+## Company Information
+
+**Company**: S³ Super Solar Solutions  
+**Country**: India  
+**Industry**: Renewable Energy FinTech / Solar Asset Financing  
+**Regulatory Framework**: NBFC-compliant, RBI-regulated financial infrastructure  
+**Target Market**: Indian investors, corporates, and solar project stakeholders  
+
+## Frequently Asked Questions
+
+**What is the minimum investment on S³?**  
+S³ offers flexible investment options including Solar SIPs. Minimum amounts vary by product type.
+
+**What returns can investors expect?**  
+Investors earn an average IRR of 15% per annum through structured solar lease and PPA payment models.
+
+**Is solar investment through S³ safe?**  
+Yes. All investments are asset-backed (tied to physical solar panels and infrastructure), NBFC-regulated, and fully audited.
+
+**What is a Power Purchase Agreement (PPA)?**  
+A PPA is a long-term contract where a corporate buys solar electricity at a fixed rate from an asset owner. Investors earn returns through PPA revenue streams.
+
+**What is a Solar SIP?**  
+A Solar SIP (Systematic Investment Plan) allows investors to invest a fixed amount monthly into solar assets, similar to a mutual fund SIP but backed by real solar infrastructure.
+
+**Who can invest on S³?**  
+Retail investors, HNIs, institutional investors, and NBFCs registered in India.
+
+**What is the difference between solar lease and PPA?**  
+In a solar lease, the investor owns the asset and leases it to a corporate. In a PPA, the investor earns from the per-unit electricity generated and sold to the corporate.

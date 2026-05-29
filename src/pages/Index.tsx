@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -77,7 +78,129 @@ const roles = [
 ];
 
 export default function Index() {
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "S³ Super Solar Solutions",
+    "alternateName": "Super Solar Solutions",
+    "url": "https://supersolarsolutions.in",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://supersolarsolutions.in/logo.png"
+    },
+    "description": "India's structured solar asset financing platform connecting P2P investors, NBFCs, corporates, and implementers for asset-backed solar investments.",
+    "foundingDate": "2023",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "IN"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "availableLanguage": ["English", "Hindi"]
+    },
+    "knowsAbout": [
+      "Solar energy investment",
+      "Power Purchase Agreement (PPA)",
+      "Solar asset financing",
+      "NBFC regulations",
+      "Renewable energy",
+      "Solar SIP",
+      "P2P lending"
+    ]
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "S³ Super Solar Solutions",
+    "url": "https://supersolarsolutions.in",
+    "description": "India's premier solar asset financing platform with 15% avg. IRR for investors.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://supersolarsolutions.in/blog?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is S³ Super Solar Solutions?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "S³ (Super Solar Solutions) is India's structured solar asset financing platform that connects P2P investors, NBFCs, corporates, and solar implementers. It enables asset-backed solar investments with an average IRR of 15% through solar lease and Power Purchase Agreement (PPA) models."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What returns can I earn by investing in solar through S³?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Investors on S³ earn an average Internal Rate of Return (IRR) of 15% per annum through structured solar lease payments and PPA revenue streams. All investments are asset-backed by physical solar infrastructure."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a Solar SIP?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A Solar SIP (Systematic Investment Plan) allows investors to invest a fixed monthly amount into solar assets, similar to a mutual fund SIP but backed by real, tangible solar infrastructure. Returns come from solar power generation and lease payments."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is solar investment through S³ regulated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. S³ operates with full NBFC compliance under Reserve Bank of India (RBI) guidelines. All transactions are auditable, and investments are backed by physical solar assets."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a Power Purchase Agreement (PPA) in solar investment?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A Power Purchase Agreement (PPA) is a long-term contract where a corporate buys solar electricity at a fixed per-unit rate from an asset owner. Investors earn returns through the revenue generated from PPA payments over the agreement term."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Who can use the S³ platform?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "S³ serves four types of users: (1) Investors who fund solar assets for structured returns, (2) Corporates who adopt solar to reduce energy costs, (3) NBFCs that deploy capital into verified solar projects, and (4) Implementers who install and maintain solar assets."
+        }
+      }
+    ]
+  };
+
   return (
+    <>
+      <Helmet>
+        <title>S³ Super Solar Solutions – India's Solar Asset Financing Platform</title>
+        <meta name="description" content="S³ Super Solar Solutions is India's structured solar asset financing platform. Earn 15% avg. IRR through asset-backed solar investments via lease and PPA models. NBFC-compliant infrastructure." />
+        <meta name="keywords" content="solar investment India, solar asset financing, PPA solar India, solar SIP, NBFC solar financing, P2P solar lending, solar returns India, renewable energy investment, solar IRR India" />
+        <link rel="canonical" href="https://supersolarsolutions.in/" />
+        <meta property="og:title" content="S³ Super Solar Solutions – India's Solar Asset Financing Platform" />
+        <meta property="og:description" content="India's structured solar asset financing platform. Earn 15% avg. IRR on asset-backed solar investments via lease and PPA. NBFC-compliant." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://supersolarsolutions.in/" />
+        <meta property="og:image" content="https://supersolarsolutions.in/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="S³ Super Solar Solutions – India's Solar Asset Financing Platform" />
+        <meta name="twitter:description" content="India's structured solar asset financing platform. 15% avg. IRR on asset-backed solar investments." />
+        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <script type="application/ld+json">{JSON.stringify(organizationSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+      </Helmet>
     <div className="min-h-screen bg-background">
       <Header />
       
@@ -339,5 +462,6 @@ export default function Index() {
         </div>
       </footer>
     </div>
+    </>
   );
 }
