@@ -224,7 +224,7 @@ export default function InvestorP2P() {
     ? (numericFraction / Number(selectedInvestment.solar_assets.total_investment)) * Number(selectedInvestment.solar_assets.capacity_kw)
     : 0;
 
-  // ✅ FIX: Accurate effective IRR for buyers — higher sale price = lower yield for buyer
+  // Accurate effective IRR for buyers — higher sale price = lower yield for buyer
   const calculatedEffectiveIRR = selectedInvestment && selectedInvestment.solar_assets && numericPrice > 0
     ? Number(selectedInvestment.solar_assets.expected_irr) * (numericFraction / numericPrice)
     : 0;
@@ -434,7 +434,7 @@ export default function InvestorP2P() {
                 {listings.map((listing) => {
                   const capacitySold = (listing.fraction_amount / listing.solar_assets.total_investment) * listing.solar_assets.capacity_kw;
                   const discountPremium = ((listing.sale_price - listing.fraction_amount) / listing.fraction_amount) * 100;
-                  // ✅ FIX: Accurate effective IRR accounting for remaining tenure
+                  // Accurate effective IRR accounting for remaining tenure
                   // If fraction was bought at a premium, buyer's effective yield is lower, and vice-versa
                   // Simplified yield formula: effectiveIRR = originalIRR × (originalValue / salePrice)
                   const effectiveIrr = Number(listing.solar_assets.expected_irr) * (Number(listing.fraction_amount) / Number(listing.sale_price));
