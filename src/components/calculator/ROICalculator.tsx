@@ -69,7 +69,7 @@ function calculateScenario(
 }
 
 export function ROICalculator() {
-  // ✅ FIX: Use live solar assets from Supabase instead of mock data
+  // Use live solar assets from Supabase instead of mock data
   const { data: liveAssets, isLoading, dataUpdatedAt } = useSolarAssets();
 
   const [selectedAssetId, setSelectedAssetId] = useState<string>('');
