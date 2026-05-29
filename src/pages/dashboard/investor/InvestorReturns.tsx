@@ -1,21 +1,19 @@
 import { useMemo, useCallback } from 'react';
+import { ReturnsSummaryCards } from './components/ReturnsSummaryCards';
+import { ReturnsTrendChart } from './components/ReturnsTrendChart';
+import { PayoutHistoryTable } from './components/PayoutHistoryTable';
+import { TaxSummaryCard } from './components/TaxSummaryCard';
+
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { useInvestments } from '@/hooks/useInvestments';
 import { useTransactions } from '@/hooks/useTransactions';
-import { TrendingUp, Wallet, Download, Calendar, ArrowUpRight, Loader2, IndianRupee, FileText, Info } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, Legend } from 'recharts';
+import { Download, Loader2 } from 'lucide-react';
+
+
+
 import { format, parseISO, startOfMonth } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -51,7 +49,7 @@ export default function InvestorReturns() {
   }, [investments]);
 
   // Filter return transactions
-  const returnTransactions = transactions?.filter(tx => tx.type === 'return') || [];
+  const returnTransactions = useMemo(() => transactions?.filter(tx => tx.type === 'return') || [], [transactions]);
 
   // Build real monthly returns chart data from actual transactions
   const monthlyChartData = useMemo(() => {
@@ -199,240 +197,27 @@ export default function InvestorReturns() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Invested</p>
-                  <p className="text-2xl font-bold">₹{(totalInvested / 100000).toFixed(2)}L</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <IndianRupee className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Actual Returns</p>
-                  <p className="text-2xl font-bold text-green-600">₹{(totalActualReturns / 100000).toFixed(2)}L</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-green-500/10 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Expected Returns</p>
-                  <p className="text-2xl font-bold text-primary">₹{(totalExpectedReturns / 100000).toFixed(2)}L</p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Calendar className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">ROI Achieved</p>
-                  <p className="text-2xl font-bold">
-                    {totalInvested > 0 ? ((totalActualReturns / totalInvested) * 100).toFixed(1) : '0.0'}%
-                  </p>
-                </div>
-                <div className="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                  <ArrowUpRight className="h-5 w-5 text-blue-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <ReturnsSummaryCards
+          totalInvested={totalInvested}
+          totalActualReturns={totalActualReturns}
+          totalExpectedReturns={totalExpectedReturns}
+        />
 
         {/* Returns Chart — built from real transaction data */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Returns Trend</CardTitle>
-            <CardDescription>
-              Monthly actual returns vs projected — based on your real transaction history
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {monthlyChartData.length > 0 ? (
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={monthlyChartData}>
-                    <defs>
-                      <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis dataKey="month" className="text-xs" />
-                    <YAxis className="text-xs" tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}K`} />
-                    <Tooltip
-                      formatter={(value: number, name: string) => [`₹${value.toLocaleString('en-IN')}`, name]}
-                      labelFormatter={(label) => `Month: ${label}`}
-                    />
-                    <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="Actual Returns"
-                      stroke="hsl(var(--primary))"
-                      fillOpacity={1}
-                      fill="url(#colorActual)"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="Projected"
-                      stroke="hsl(var(--muted-foreground))"
-                      strokeDasharray="5 5"
-                      dot={false}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="h-72 flex items-center justify-center text-muted-foreground">
-                <div className="text-center">
-                  <Wallet className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No return transactions yet. Chart will populate as returns are credited.</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ReturnsTrendChart monthlyChartData={monthlyChartData} />
 
         {/* Payout History */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Payout History</CardTitle>
-            <CardDescription>All your return payouts from solar assets</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="all">
-              <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="completed">Completed</TabsTrigger>
-                <TabsTrigger value="pending">Pending</TabsTrigger>
-              </TabsList>
-              {(['all', 'completed', 'pending'] as const).map(tab => {
-                const filtered = tab === 'all'
-                  ? returnTransactions
-                  : returnTransactions.filter(tx => tx.status === tab);
-                return (
-                  <TabsContent key={tab} value={tab} className="mt-4">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Reference</TableHead>
-                          <TableHead>From</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filtered.length > 0 ? (
-                          filtered.map((tx) => (
-                            <TableRow key={tx.id}>
-                              <TableCell className="font-medium">
-                                {format(parseISO(tx.created_at), 'dd MMM yyyy')}
-                              </TableCell>
-                              <TableCell className="font-mono text-sm">{tx.reference}</TableCell>
-                              <TableCell>{tx.from_entity}</TableCell>
-                              <TableCell className="font-semibold text-green-600">
-                                +₹{Number(tx.amount).toLocaleString('en-IN')}
-                              </TableCell>
-                              <TableCell>
-                                <Badge variant="outline" className={statusColors[tx.status]}>
-                                  {tx.status.charAt(0).toUpperCase() + tx.status.slice(1)}
-                                </Badge>
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                              No {tab !== 'all' ? tab : ''} payout transactions yet
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </TabsContent>
-                );
-              })}
-            </Tabs>
-          </CardContent>
-        </Card>
+        <PayoutHistoryTable returnTransactions={returnTransactions} statusColors={statusColors} />
 
         {/* Tax Summary — accurate per Section 194A */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <CardTitle>Tax Summary (FY {new Date().getFullYear()}-{(new Date().getFullYear() + 1).toString().slice(2)})</CardTitle>
-                <CardDescription>TDS deducted on returns as per Section 194A</CardDescription>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleExportForm26AS}>
-                <FileText className="mr-2 h-4 w-4" />
-                Download Form 26AS
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* TDS Threshold Notice */}
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-sm text-blue-700 mb-6">
-              <Info className="h-4 w-4 shrink-0 mt-0.5" />
-              <div>
-                <strong>Section 194A (TDS on Interest Income):</strong> TDS at 10% is applicable only when annual returns exceed ₹40,000.
-                {!tdsApplicable && (
-                  <span className="block mt-1 text-green-700 font-medium">
-                    ✓ Your current returns are below the ₹40,000 threshold — No TDS applicable.
-                  </span>
-                )}
-              </div>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-4">
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">Gross Returns</p>
-                <p className="text-xl font-bold mt-1">₹{totalActualReturns.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">TDS Threshold (194A)</p>
-                <p className="text-xl font-bold mt-1">₹{TDS_THRESHOLD.toLocaleString('en-IN')}</p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">
-                  TDS Deducted ({tdsApplicable ? '10%' : 'N/A'})
-                </p>
-                <p className={`text-xl font-bold mt-1 ${tdsApplicable ? 'text-red-600' : 'text-muted-foreground'}`}>
-                  {tdsApplicable ? `₹${tdsAmount.toLocaleString('en-IN')}` : '₹0'}
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-muted/50">
-                <p className="text-sm text-muted-foreground">Net Returns</p>
-                <p className="text-xl font-bold mt-1 text-green-600">
-                  ₹{netReturns.toLocaleString('en-IN')}
-                </p>
-              </div>
-            </div>
-
-            <p className="text-xs text-muted-foreground mt-4">
-              * Consult your tax advisor for accurate tax filing. TDS certificate (Form 16A) will be issued by the platform at year-end.
-            </p>
-          </CardContent>
-        </Card>
+        <TaxSummaryCard
+          totalActualReturns={totalActualReturns}
+          tdsApplicable={tdsApplicable}
+          tdsAmount={tdsAmount}
+          netReturns={netReturns}
+          TDS_THRESHOLD={TDS_THRESHOLD}
+          handleExportForm26AS={handleExportForm26AS}
+        />
       </div>
     </DashboardLayout>
   );
