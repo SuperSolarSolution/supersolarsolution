@@ -38,7 +38,7 @@ const roleMenuItems: Record<UserRole, MenuItem[]> = {
   ],
   nbfc: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/nbfc' },
-    { label: 'Project Discovery', icon: Sun, path: '/dashboard/nbfc/discover' },
+    { label: 'Project Discovery', icon: Sun, path: '/dashboard/nbfc/projects' },
     { label: 'Asset Portfolio', icon: BarChart3, path: '/dashboard/nbfc/portfolio' },
     { label: 'Fund Allocation', icon: Wallet, path: '/dashboard/nbfc/allocation' },
     { label: 'Disbursements', icon: Banknote, path: '/dashboard/nbfc/disbursements' },

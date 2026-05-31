@@ -26,7 +26,7 @@ const roleNavItems: Record<UserRole, NavItem[]> = {
   ],
   nbfc: [
     { label: 'Home', icon: Home, path: '/dashboard/nbfc' },
-    { label: 'Discover', icon: Sun, path: '/dashboard/nbfc/discover' },
+    { label: 'Discover', icon: Sun, path: '/dashboard/nbfc/projects' },
     { label: 'Portfolio', icon: BarChart3, path: '/dashboard/nbfc/portfolio' },
     { label: 'Alerts', icon: AlertTriangle, path: '/dashboard/nbfc/alerts' },
     { label: 'Settings', icon: Settings, path: '/dashboard/nbfc/settings' },
