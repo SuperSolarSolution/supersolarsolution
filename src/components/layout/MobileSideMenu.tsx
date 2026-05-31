@@ -48,8 +48,11 @@ const roleMenuItems: Record<UserRole, MenuItem[]> = {
   ],
   implementer: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/implementer' },
-    { label: 'My Projects', icon: Building2, path: '/dashboard/implementer/projects' },
-    { label: 'Assigned Assets', icon: Sun, path: '/dashboard/implementer/assets' },
+    { label: 'Projects', icon: Building2, path: '/dashboard/implementer/projects' },
+    { label: 'Installation', icon: Sun, path: '/dashboard/implementer/installation' },
+    { label: 'Maintenance', icon: AlertTriangle, path: '/dashboard/implementer/maintenance' },
+    { label: 'Performance', icon: BarChart3, path: '/dashboard/implementer/performance' },
+    { label: 'Documents', icon: FileText, path: '/dashboard/implementer/documents' },
     { label: 'Settings', icon: Settings, path: '/dashboard/implementer/settings' },
   ],
   admin: [
