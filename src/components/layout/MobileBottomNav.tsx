@@ -34,7 +34,8 @@ const roleNavItems: Record<UserRole, NavItem[]> = {
   implementer: [
     { label: 'Home', icon: Home, path: '/dashboard/implementer' },
     { label: 'Projects', icon: Building2, path: '/dashboard/implementer/projects' },
-    { label: 'Assets', icon: Sun, path: '/dashboard/implementer/assets' },
+    { label: 'Install', icon: Wrench, path: '/dashboard/implementer/installation' },
+    { label: 'Perf', icon: BarChart3, path: '/dashboard/implementer/performance' },
     { label: 'Settings', icon: Settings, path: '/dashboard/implementer/settings' },
   ],
   admin: [
