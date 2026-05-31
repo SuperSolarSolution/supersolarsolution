@@ -167,10 +167,21 @@ const App = () => (
                             path="/dashboard/implementer/*"
                             element={
                                 <ProtectedRoute allowedRoles={['implementer']}>
-                                    <ImplementerDashboard />
+                                    <Routes>
+                                        <Route index element={<ImplementerDashboard />} />
+                                        <Route path="projects" element={<ImplementerProjects />} />
+                                        <Route path="installation" element={<ImplementerInstallation />} />
+                                        <Route path="maintenance" element={<ImplementerMaintenance />} />
+                                        <Route path="performance" element={<ImplementerPerformance />} />
+                                        <Route path="documents" element={<ImplementerDocuments />} />
+                                        <Route path="settings" element={<ImplementerSettings />} />
+                                        <Route path="assets" element={<ImplementerProjects />} />
+                                        <Route path="*" element={<ImplementerDashboard />} />
+                                    </Routes>
                                 </ProtectedRoute>
                             }
                         />
+
                         <Route
                             path="/dashboard/admin/*"
                             element={
