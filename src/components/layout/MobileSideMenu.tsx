@@ -38,7 +38,7 @@ const roleMenuItems: Record<UserRole, MenuItem[]> = {
   ],
   nbfc: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/nbfc' },
-    { label: 'Project Discovery', icon: Sun, path: '/dashboard/nbfc/discover' },
+    { label: 'Project Discovery', icon: Sun, path: '/dashboard/nbfc/projects' },
     { label: 'Asset Portfolio', icon: BarChart3, path: '/dashboard/nbfc/portfolio' },
     { label: 'Fund Allocation', icon: Wallet, path: '/dashboard/nbfc/allocation' },
     { label: 'Disbursements', icon: Banknote, path: '/dashboard/nbfc/disbursements' },
@@ -48,8 +48,11 @@ const roleMenuItems: Record<UserRole, MenuItem[]> = {
   ],
   implementer: [
     { label: 'Dashboard', icon: Home, path: '/dashboard/implementer' },
-    { label: 'My Projects', icon: Building2, path: '/dashboard/implementer/projects' },
-    { label: 'Assigned Assets', icon: Sun, path: '/dashboard/implementer/assets' },
+    { label: 'Projects', icon: Building2, path: '/dashboard/implementer/projects' },
+    { label: 'Installation', icon: Sun, path: '/dashboard/implementer/installation' },
+    { label: 'Maintenance', icon: AlertTriangle, path: '/dashboard/implementer/maintenance' },
+    { label: 'Performance', icon: BarChart3, path: '/dashboard/implementer/performance' },
+    { label: 'Documents', icon: FileText, path: '/dashboard/implementer/documents' },
     { label: 'Settings', icon: Settings, path: '/dashboard/implementer/settings' },
   ],
   admin: [

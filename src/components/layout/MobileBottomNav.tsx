@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, TrendingUp, Sun, Wallet, Settings, Building2, Users, FileText, BarChart3, AlertTriangle, CalendarClock, LucideIcon } from 'lucide-react';
+import { Home, TrendingUp, Sun, Wallet, Settings, Building2, Users, FileText, BarChart3, AlertTriangle, CalendarClock, Wrench, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserRole } from '@/types';
 
@@ -26,7 +26,7 @@ const roleNavItems: Record<UserRole, NavItem[]> = {
   ],
   nbfc: [
     { label: 'Home', icon: Home, path: '/dashboard/nbfc' },
-    { label: 'Discover', icon: Sun, path: '/dashboard/nbfc/discover' },
+    { label: 'Discover', icon: Sun, path: '/dashboard/nbfc/projects' },
     { label: 'Portfolio', icon: BarChart3, path: '/dashboard/nbfc/portfolio' },
     { label: 'Alerts', icon: AlertTriangle, path: '/dashboard/nbfc/alerts' },
     { label: 'Settings', icon: Settings, path: '/dashboard/nbfc/settings' },
@@ -34,7 +34,8 @@ const roleNavItems: Record<UserRole, NavItem[]> = {
   implementer: [
     { label: 'Home', icon: Home, path: '/dashboard/implementer' },
     { label: 'Projects', icon: Building2, path: '/dashboard/implementer/projects' },
-    { label: 'Assets', icon: Sun, path: '/dashboard/implementer/assets' },
+    { label: 'Install', icon: Wrench, path: '/dashboard/implementer/installation' },
+    { label: 'Perf', icon: BarChart3, path: '/dashboard/implementer/performance' },
     { label: 'Settings', icon: Settings, path: '/dashboard/implementer/settings' },
   ],
   admin: [

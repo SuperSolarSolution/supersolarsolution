@@ -31,6 +31,12 @@ import RiskAlerts from "./pages/dashboard/nbfc/RiskAlerts";
 import Reports from "./pages/dashboard/nbfc/Reports";
 import NBFCSettings from "./pages/dashboard/nbfc/NBFCSettings";
 import ImplementerDashboard from "./pages/dashboard/ImplementerDashboard";
+import ImplementerProjects from "./pages/dashboard/implementer/ImplementerProjects";
+import ImplementerInstallation from "./pages/dashboard/implementer/ImplementerInstallation";
+import ImplementerMaintenance from "./pages/dashboard/implementer/ImplementerMaintenance";
+import ImplementerPerformance from "./pages/dashboard/implementer/ImplementerPerformance";
+import ImplementerDocuments from "./pages/dashboard/implementer/ImplementerDocuments";
+import ImplementerSettings from "./pages/dashboard/implementer/ImplementerSettings";
 import AdminOverview from "./pages/dashboard/admin/AdminOverview";
 import AdminUsers from "./pages/dashboard/admin/AdminUsers";
 import AdminAssets from "./pages/dashboard/admin/AdminAssets";
@@ -167,10 +173,21 @@ const App = () => (
                             path="/dashboard/implementer/*"
                             element={
                                 <ProtectedRoute allowedRoles={['implementer']}>
-                                    <ImplementerDashboard />
+                                    <Routes>
+                                        <Route index element={<ImplementerDashboard />} />
+                                        <Route path="projects" element={<ImplementerProjects />} />
+                                        <Route path="installation" element={<ImplementerInstallation />} />
+                                        <Route path="maintenance" element={<ImplementerMaintenance />} />
+                                        <Route path="performance" element={<ImplementerPerformance />} />
+                                        <Route path="documents" element={<ImplementerDocuments />} />
+                                        <Route path="settings" element={<ImplementerSettings />} />
+                                        <Route path="assets" element={<ImplementerProjects />} />
+                                        <Route path="*" element={<ImplementerDashboard />} />
+                                    </Routes>
                                 </ProtectedRoute>
                             }
                         />
+
                         <Route
                             path="/dashboard/admin/*"
                             element={

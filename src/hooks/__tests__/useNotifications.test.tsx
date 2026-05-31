@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, mock, beforeEach, afterEach } from 'bun:test';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useNotifications } from '../useNotifications';
